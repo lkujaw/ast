@@ -2000,7 +2000,7 @@ int main()
 			case $h in
 			'')	h=local ;;
 			esac
-			a=`arch || uname -m || att uname -m || uname -s || att uname -s`
+			a=`uname -m || att uname -m || arch || uname -s || att uname -s`
 			case $a in
 			*[\ \	]*)	a=`echo $a | $SED "s/[ 	]/-/g"` ;;
 			esac
