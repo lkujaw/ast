@@ -569,6 +569,10 @@ tst	lib_memccpy string.h unistd.h stdlib.h fcntl.h signal.h sys/types.h sys/stat
 	#endif
 		return 0;
 	}
+}end fail{
+	echo "#ifdef	memccpy"
+	echo "# undef	memccpy"
+	echo "#endif"
 }end
 
 tst	lib_utime_now note{ utime works with 0 time vector }end execute{

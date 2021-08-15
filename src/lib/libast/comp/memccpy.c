@@ -30,6 +30,14 @@ NoN(memccpy)
 #else
 
 /*
+ * Undefine memccpy on systems that fail the memccpy iffe check and
+ * define memccpy as a macro.
+ */
+#ifdef	memccpy
+# undef	memccpy
+#endif
+
+/*
  * Copy s2 to s1, stopping if character c is copied. Copy no more than n bytes.
  * Return a pointer to the byte after character c in the copy,
  * or 0 if c is not found in the first n bytes.

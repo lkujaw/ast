@@ -105,18 +105,11 @@ int		rc;	/* record separator.	*/
 			break;
 		}
 
-//#if _lib_memccpy && !__ia64 /* these guys may never get it right */
-// using memccpy here causes crashes - assuming overlap between src and dst
-#if 0
-		if((ps = (uchar*)memccpy(ps,s,'\0',p)) != NIL(uchar*))
-			ps -= 1;
-		else	ps  = f->next+p;
-		s += ps - f->next;
-#else
-		for(; p > 0; --p, ++ps, ++s)
+/* using memccpy here causes crashes - assuming overlap between src and dst */
+		for(; p > 0; --p, ++ps, ++s) {
 			if((*ps = *s) == 0)
 				break;
-#endif
+		}
 		w += ps - f->next;
 		f->next = ps;
 	}
