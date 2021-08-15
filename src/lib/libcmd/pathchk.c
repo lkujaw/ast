@@ -238,13 +238,13 @@ b_pathchk(int argc, char** argv, Shbltin_t* context)
 	{
 		switch (optget(argv, usage))
 		{
-  		case 'a':
+		case 'a':
 			mode |= COMPONENTS|PATH;
 			continue;
-  		case 'p':
+		case 'p':
 			mode |= COMPONENTS;
 			continue;
-  		case 'P':
+		case 'P':
 			mode |= PATH;
 			continue;
 		case ':':
@@ -258,8 +258,9 @@ b_pathchk(int argc, char** argv, Shbltin_t* context)
 	}
 	argv += opt_info.index;
 	if (!*argv || error_info.errors)
-		error(ERROR_usage(2),"%s", optusage(NiL));
-	while (s = *argv++)
+		error(ERROR_usage(2), "%s", optusage(NiL));
+	while ((s = *argv++)) {
 		pathchk(s, mode);
+	}
 	return error_info.errors != 0;
 }
