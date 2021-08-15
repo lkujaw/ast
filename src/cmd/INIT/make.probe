@@ -171,6 +171,7 @@ shared=
 shared_name=
 shared_registry=
 shellmagic=
+soextra=
 soversion=
 stdc=
 strict=
@@ -1087,6 +1088,13 @@ case " $cc_dll " in
 *)	cc_dll="$cc_dll_def $cc_dll"
 	;;
 esac
+# Apple Xcode versions >= 7.0 require the use of .tbd files when linking.
+case $soextra in
+"")     case $so in
+        .dylib) soextra=".tbd" ;;
+        esac
+        ;;
+esac
 
 case $hosttype in
 win32.*|cygwin.*|os2.*)
@@ -1149,8 +1157,8 @@ main()
 	# the dll_libraries probe is still lame
 	case $dll_libraries in
 	'')	case $hosttype in
-		sco.*|sol*.*|sun*)	;;
-		*)			dll_libraries='-lm -lc' ;;
+		sco.*|sol*.*|sun*|unixware.*)	;;
+		*)			        dll_libraries='-lm -lc' ;;
 		esac
 		;;
 	esac
@@ -1177,7 +1185,7 @@ case $a in
 esac
 case $stdlib in
 '')	stdlib=`$cc -v doti.$src 2>&1 |
-		sed 's/  */\n/g' |
+		tr ' ' '\n' |
 		sed -e '/^-L/!d' -e 's/^-L//' |
 		while read dir
 		do	if	test -d "$dir"
@@ -1189,7 +1197,7 @@ case $stdlib in
 	shift
 	for o in "$@"
 	do	stdlib="$stdlib "`$cc $o doti.$src 2>&1 |
-		sed 's/  */\n/g' |
+		tr ' ' '\n' |
 		sed -e '/^-L/!d' -e '/\/lib64$/!d' -e 's/^-L//'`
 	done
 	;;
@@ -1434,12 +1442,15 @@ case $stdlib in
 						fi
 					done
 				done > tmp.tmp
+# Filter the list of readable, non-zero files (tmp.tmp) for static
+# ($lib [e.g., .a]) and shared ($so [e.g., .so or .dylib]) libraries.
 				if	test -s tmp.tmp
-				then	if	egrep -i "^${prefix_archive}[abcdefghijklmnopqrstuvwxyz0123456789_][abcdefghijklmnopqrstuvwxyz0123456789_]*\\.$lib\$" tmp.tmp >lib.tmp ||
+				then	if	egrep -i "^${prefix_archive}[abcdefghijklmnopqrstuvwxyz0123456789_+-]+\\.$lib\$" tmp.tmp >lib.tmp ||
 						egrep -i "\\.$obj\$" tmp.tmp >/dev/null ||
-						egrep -i "^${prefix_shared}[abcdefghijklmnopqrstuvwxyz0123456789_][abcdefghijklmnopqrstuvwxyz0123456789_]*\\$so(.[0-9]+)*\$" tmp.tmp >>lib.tmp
+						egrep -i "^${prefix_shared}[abcdefghijklmnopqrstuvwxyz0123456789_+-]+(.[0-9]+)*\\$so(.[0-9]+)*\$" tmp.tmp ||
+						egrep -i "^${prefix_shared}[abcdefghijklmnopqrstuvwxyz0123456789_+-]+(.[0-9]+)*\\$soextra(.[0-9]+)*\$" tmp.tmp >>lib.tmp
 					then	if	test -s lib.tmp
-						then	sed -e "s,.*/,," -e 's,^'${prefix_archive}'\(.*\)\.'$lib'$,\1,g' -e 's,^'${prefix_shared}'\(.*\)\'$so'[.0-9]*,\1,g' lib.tmp | sort -u > tmp.tmp
+						then	sed -e "s,.*/,," -e 's,^'${prefix_archive}'\(.*\)\.'$lib'$,\1,g' -e 's,^'${prefix_shared}'\(.*\)\'$so'[0-9.]*$,\1,g' -e 's,^'${prefix_shared}'\(.*\)\'$soextra'[0-9.]*$,\1,g' lib.tmp | sort -u > tmp.tmp
 							xs=`sort all.tmp all.tmp tmp.tmp | uniq -u`
 							case $xs in
 							'')	continue ;;
@@ -2117,6 +2128,7 @@ CC_SUFFIX_DYNAMIC=$sd
 CC_SUFFIX_LD=$ldscript
 CC_SUFFIX_OBJECT=.$obj
 CC_SUFFIX_SHARED=$so
+CC_SUFFIX_SHARED_EXTRA=$soextra
 CC_SUFFIX_SOURCE=.$src
 CC_SUFFIX_STATIC=$sa
 CC_VERSION=$version_flags
@@ -2230,6 +2242,7 @@ echo CC.SUFFIX.DYNAMIC = $CC_SUFFIX_DYNAMIC
 echo CC.SUFFIX.LD = $CC_SUFFIX_LD
 echo CC.SUFFIX.OBJECT = $CC_SUFFIX_OBJECT
 echo CC.SUFFIX.SHARED = $CC_SUFFIX_SHARED
+echo CC.SUFFIX.SHARED.EXTRA = $CC_SUFFIX_SHARED_EXTRA
 echo CC.SUFFIX.SOURCE = $CC_SUFFIX_SOURCE
 echo CC.SUFFIX.STATIC = $CC_SUFFIX_STATIC
 echo CC.VERSION = $CC_VERSION
