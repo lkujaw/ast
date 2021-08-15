@@ -1,0 +1,9 @@
+# GNU Global files
+GPATH
+GRTAGS
+GTAGS
+
+# Build products directory
+arch
+lib/package/gen
+lib/package/tgz
