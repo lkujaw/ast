@@ -790,6 +790,9 @@ end
 							end
 							if "$(CC.SUFFIX.SHARED)"
 								S := $(S:V)|$(CC.SUFFIX.SHARED)
+								if "$(CC.SUFFIX.SHARED.EXTRA)"
+									S:= $(S:V)|$(CC.SUFFIX.SHARED.EXTRA)
+								end
 								if "$(CC.SUFFIX.SHARED)" != "$(CC.SUFFIX.OBJECT)"
 									H = -
 									if "$(CC.DIALECT:N=VERSION)"
@@ -2102,7 +2105,7 @@ RECURSEROOT = .
 				T := $(T:/--//)
 			end
 			if T == "no*"
-				T := $(T:/no//}
+				T := $(T:/no//)
 				X = 0
 			else
 				X = 1
@@ -2491,7 +2494,7 @@ RECURSEROOT = .
 				if F == "+l*|-ldl|-liconv" /* XXX: probe!!! */
 					S += $(F)
 					if F == "+l*"
-						if ! ( P = "$(<:T=M:A=.COMMAND:O=1)" ) 
+						if ! ( P = "$(<:T=M:A=.COMMAND:O=1)" )
 							P := $(<:T=M:B:S:N=$(CC.PREFIX.ARCHIVE)*$(CC.SUFFIX.ARCHIVE)|$(CC.PREFIX.SHARED)*$(CC.SUFFIX.SHARED)*:O=1)
 						end
 						if P
@@ -2499,6 +2502,7 @@ RECURSEROOT = .
 						end
 					end
 				else
+					/* -l$NAME will expand to -l$NAME if the library is found, otherwise "" */
 					L := $(F:T=F)
 					if L == "-l*|*$(CC.SUFFIX.DYNAMIC|CC.SUFFIX.SHARED|"..")|*/libm.a" /* XXX: probe!!! */
 						S += $(L)
@@ -3735,7 +3739,7 @@ PACKAGES : .SPECIAL .FUNCTION
 		end
 		$(PY:B:B)$(PY:S) : .PASS.AFTER.$(PY) .FAIL.AFTER.$(PY)
 	end
-	
+
 /*
  * rhs are compiled using $(cc) rather than $(CC)
  * use like ::
