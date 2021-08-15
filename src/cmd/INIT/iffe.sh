@@ -14,7 +14,7 @@
 #                            AT&T Research                             #
 #                           Florham Park NJ                            #
 #                                                                      #
-#                 Glenn Fowler <gsf@research.att.com>                  #
+#               Glenn Fowler <glenn.s.fowler@gmail.com>                #
 #                                                                      #
 ########################################################################
 # Glenn Fowler & Phong Vo
@@ -624,7 +624,8 @@ ifs=${IFS-'
 in=
 includes=
 intrinsic=
-libpaths="LD_LIBRARY_PATH LD_LIBRARYN32_PATH LD_LIBRARY64_PATH LIBPATH SHLIB_PATH"
+libpaths="DYLD_LIBRARY_PATH LD_LIBRARY_PATH LD_LIBRARYN32_PATH LD_LIBRARY64_PATH LIBPATH SHLIB_PATH"
+	DYLD_LIBRARY_PATH_default=:/lib:/usr/lib
 	LD_LIBRARY_PATH_default=:/lib:/usr/lib
 	LD_LIBRARYN32_PATH_default=:/lib32:/usr/lib32
 	LD_LIBRARY64_PATH_default=:/lib64:/usr/lib64
@@ -861,7 +862,7 @@ case `(getopts '[-][123:xyz]' opt --xyz; echo 0$opt) 2>/dev/null` in
 	\b#define\b \aarg\a \adefault\a is emitted. \bkey\b accepts multiple
 	\b= \b\adefault\a values; the first valid one is used.]
 [+?Each test statement generates a portion of a C language header that contains
-	macro defintions, comments, and other text corresponding to the feature
+	macro definitions, comments, and other text corresponding to the feature
 	tests. \b#ifndef _def_\b\aname\a\b_\b\adirectory\a ...
 	\b#endif\b guards the generated header from multiple \b#include\bs,
 	where \aname\a is determined by either the \brun\b statement input file
@@ -917,7 +918,7 @@ case `(getopts '[-][123:xyz]' opt --xyz; echo 0$opt) 2>/dev/null` in
 	[+def \aname\a?Equivalent to \bcmd,dat,hdr,key,lib,mth,sys,typ\b
 		\aname\a.]
 	[+dfn \aname\a?If \aname\a is a macro in the candidate headers then
-		a \b#define\b \aname\a \avalue\a statment is output for the
+		a \b#define\b \aname\a \avalue\a statement is output for the
 		\avalue\a defined in the headers. The definition is \b#ifndef\b
 		guarded.]
 	[+exp \aname\a \aexpression\a?If \aexpression\a is a \"...\" string
@@ -1050,7 +1051,7 @@ case `(getopts '[-][123:xyz]' opt --xyz; echo 0$opt) 2>/dev/null` in
 		\bsh\b(1).]
 	[+preprocess?The block is preprocessed (\bcc -E\b).]
 	[+run?The block is executed as a shell script and the output is
-		copied to the output file. Succesful test macros are also
+		copied to the output file. Successful test macros are also
 		defined as shell variables with value \b1\b and are available
 		within the block. Likewise, failed test macros are defined
 		as shell variables with value \b0\b.]
