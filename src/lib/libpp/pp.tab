@@ -103,6 +103,8 @@
 
 %keywords "static struct ppkeyword predicates" prefix=X_ index=optindex
 
+        __has_include
+        __has_include_next
 	defined
 	+exists
 	+included

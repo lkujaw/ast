@@ -101,6 +101,7 @@
 #define SEARCH_INCLUDE		(1<<2)	/* ppsearch for include		*/
 #define SEARCH_VENDOR		(1<<3)	/* search vendor dirs only	*/
 #define SEARCH_USER		(1<<4)	/* first user flag		*/
+#define SEARCH_NEXT	        (1<<5)  /* search for next (uncover)	*/
 
 #define STYLE_gnu		(1<<0)	/* gnu style args		*/
 

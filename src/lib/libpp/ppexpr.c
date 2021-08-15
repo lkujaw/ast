@@ -66,10 +66,11 @@ exists(int op, char* pred, register char* args)
 		c = 0;
 		goto done;
 	}
-	if (op == X_EXISTS)
+	if (op == X___HAS_INCLUDE || op == X___HAS_INCLUDE_NEXT || op == X_EXISTS)
 	{
-		if ((c = pplex()) == ',')
+		if (op == X_EXISTS && (c = pplex()) == ',')
 		{
+			/* Process provided path [#if exists(x,$PATH)] */
 			while ((c = pplex()) == T_STRING)
 			{
 				if (pathaccess(pp.token, file, NiL, 0, pp.path, MAXTOKEN + 1))
@@ -86,7 +87,8 @@ exists(int op, char* pred, register char* args)
 			message((-2, "%s: %s not found", pred, file));
 			c = 0;
 		}
-		else c = ppsearch(file, type, SEARCH_EXISTS) >= 0;
+		else c = ppsearch(file, type, SEARCH_EXISTS |
+                                  (op == X___HAS_INCLUDE_NEXT) ? SEARCH_NEXT : 0) >= 0;
 	}
 	else
 	{
@@ -167,6 +169,8 @@ predicate(int warn)
 	index = (int)hashref(pp.strtab, pp.token);
 	if (warn && peekchr() != '(') switch (index)
 	{
+	case X___HAS_INCLUDE:
+	case X___HAS_INCLUDE_NEXT:
 	case X_DEFINED:
 	case X_EXISTS:
 	case X_INCLUDED:
@@ -229,6 +233,8 @@ predicate(int warn)
 			return *(args + 9) ? (int)hashref(pp.strtab, args + 9) : 1;
 		}
 		break;
+	case X___HAS_INCLUDE:
+	case X___HAS_INCLUDE_NEXT:
 	case X_EXISTS:
 	case X_INCLUDED:
 		return exists(index, pred, args);

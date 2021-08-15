@@ -27,10 +27,9 @@
 
 #include "pplib.h"
 
-#define SEARCH_NEXT	(SEARCH_USER<<1)/* search for next (uncover)	*/
-#define SEARCH_SKIP	(SEARCH_USER<<2)/* current binding skipped	*/
-#define SEARCH_TEST	(SEARCH_USER<<3)/* test for binding		*/
-#define SEARCH_FOUND	(SEARCH_USER<<4)/* current binding found	*/
+#define SEARCH_SKIP	(SEARCH_NEXT<<1)/* current binding skipped	*/
+#define SEARCH_TEST	(SEARCH_NEXT<<2)/* test for binding		*/
+#define SEARCH_FOUND	(SEARCH_NEXT<<3)/* current binding found	*/
 
 #define COLUMN_TAB	7
 #define COLUMN_MAX	72
