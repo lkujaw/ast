@@ -230,7 +230,11 @@ getids(Sfio_t* sp, const char* name, register int flags)
 			 */
 
 			if ((maxgroups = getgroups(0, groups)) <= 0)
+#if _lib_sysconf
+				maxgroups = sysconf(_SC_NGROUPS_MAX);
+#else
 				maxgroups = NGROUPS_MAX;
+#endif
 			if (!(groups = newof(0, gid_t, maxgroups + 1, 0)))
 				error(ERROR_exit(1), "out of space [group array]");
 		}
