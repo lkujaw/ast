@@ -14,7 +14,7 @@
 *                            AT&T Research                             *
 *                           Florham Park NJ                            *
 *                                                                      *
-*                 Glenn Fowler <gsf@research.att.com>                  *
+*               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
 #pragma prototyped
@@ -560,24 +560,30 @@ getval(register char* s, int op)
 static void
 resetvar(register Var_t* p, char* v, int append)
 {
-	register int	n;
+	const int nLengthOfV = strlen(v);
 
-	n = strlen(v);
-	if (!p->value || (p->property & V_import) || n > p->length)
+	if (!p->value || (p->property & V_import) || nLengthOfV > p->length)
 	{
-		if (append)
-			n = (n + 1023) & ~1023;
-		if (n < MINVALUE)
-			n = MINVALUE;
-		if (!(p->property & V_free))
-		{
+		int nNewLengthOfP = nLengthOfV;
+
+		if (append) {
+			/* Round up to nearest 1KiB. */
+			nNewLengthOfP = (nNewLengthOfP + 1023) & ~1023;
+		}
+		if (nNewLengthOfP < MINVALUE) {
+			nNewLengthOfP = MINVALUE;
+		}
+		if (!(p->property & V_free)) {
 			p->property |= V_free;
 			p->value = 0;
 		}
-		p->value = newof(p->value, char, n + 1, 0);
-		p->length = n;
+		/* Add one to nNewLengthOfP for null terminator. */
+		p->value = newof(p->value, char, nNewLengthOfP + 1, 0);
+		p->length = nNewLengthOfP;
 	}
-	strcpy(p->value, v);
+	/* p->value and v may overlap, therefore strcpy() cannot be used. */
+	/* Add one to nLengthOfV for null terminator. */
+	memmove(p->value, v, nLengthOfV + 1);
 }
 
 /*
@@ -866,13 +872,17 @@ readenv(void)
 	register char*	t;
 
 	for (e = environ; t = *e; e++)
+	{
 		if (istype(*t, C_ID1))
 		{
-			while (istype(*t, C_ID2))
+			while (istype(*t, C_ID2)) {
 				sfputc(internal.nam, *t++);
-			if (*t++ == '=')
+			}
+			if (*t++ == '=') {
 				setvar(sfstruse(internal.nam), t, V_import);
-			else
+			} else {
 				sfstrseek(internal.nam, 0, SEEK_SET);
+			}
 		}
+	}
 }
