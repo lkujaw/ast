@@ -1223,9 +1223,11 @@ addpid(Pssent_t* pe, register char* s)
 				break;
 			errno = 0;
 			n = strtol(t, &e, 0);
-// deleting check for PID_MAX because on linux this relies on kernel instance
-// and the system will reject bad pids any way
-//			if (errno || n <= 0 || n > PID_MAX || *e)
+/*
+ * Deleting check for PID_MAX because on Linux this relies on kernel instance
+ * and the system will reject bad pids any way.
+ *     Old code: if (errno || n <= 0 || n > PID_MAX || *e)
+ */
 			if (errno || n <= 0 || *e)
 			{
 				error(2, "%s: invalid pid", t);

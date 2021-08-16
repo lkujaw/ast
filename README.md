@@ -9,11 +9,12 @@ portable across many UNIX and UNIX-like systems and also works under
 
 ## Platform Support
 
-| Platform                   | Architecture     | Compiler         | Native Toolchain |
-|----------------------------|------------------|------------------|------------------|
-| Apple Mac OS 10.15         | darwin.i386-64   | Xcode 11.7       | Yes              |
-| SCO UNIXWARE 7             | darwin.i386      | UNIXWARE CCS 4.2 | Yes              |
-| Red Hat Enterprise Linux 6 | linux.i386       | GNU GCC 4.4.7    | Yes              |
+| Platform                   | Architecture     | Compiler               | Native Toolchain |
+|----------------------------|------------------|------------------------|------------------|
+| Apple Mac OS 10.15         | darwin.i386-64   | Xcode 11.7             | Yes              |
+| SCO UNIXWARE 7             | darwin.i386      | UNIXWARE CCS 4.2       | Yes              |
+| Sun Microsystems Solaris 8 | sol8.i386        | WorkShop Compilers 5.0 | Yes              |
+| Red Hat Enterprise Linux 6 | linux.i386       | GNU GCC 4.4.7          | Yes              |
 
 ## Build
 
