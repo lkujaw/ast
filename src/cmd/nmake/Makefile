@@ -15,6 +15,7 @@ RULESFILES = Scanrules.mk S.mk SCCS.mk SYSTEM.mk TABLE.mk \
 		mkservice.mk yacc.mk \
 		rules-win32.mk \
 		pkg-tcl.mk pkg-X11.mk pkg-freetype.mk \
+		pkg-ada.mk \
 		pkg-cobol.mk pkg-cobol-cobc.mk pkg-cobol-mfcobc.mk
 RULESDIR = $(LIBDIR)/$(ID)
 

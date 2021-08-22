@@ -605,6 +605,9 @@ make pkg-freetype.mk
 done pkg-freetype.mk
 exec - test '' = 'pkg-freetype.mk' || ${STDCMP} 2>/dev/null -s pkg-freetype.mk ${INSTALLROOT}/lib/make/pkg-freetype.mk || { ${STDMV} ${INSTALLROOT}/lib/make/pkg-freetype.mk ${INSTALLROOT}/lib/make/pkg-freetype.mk.old 2>/dev/null || true; ${STDCP} pkg-freetype.mk ${INSTALLROOT}/lib/make/pkg-freetype.mk ;}
 done ${INSTALLROOT}/lib/make/pkg-freetype.mk generated
+make pkg-ada.mk
+done pkg-ada.mk
+exec - test '' = 'pkg-ada.mk' || ${STDCMP} 2>/dev/null -s pkg-ada.mk ${INSTALLROOT}/lib/make/pkg-ada.mk || { ${STDMV} ${INSTALLROOT}/lib/make/pkg-ada.mk ${INSTALLROOT}/lib/make/pkg-ada.mk.old 2>/dev/null || true; ${STDCP} pkg-ada.mk ${INSTALLROOT}/lib/make/pkg-ada.mk ;}
 make ${INSTALLROOT}/lib/make/pkg-cobol.mk
 make pkg-cobol.mk
 done pkg-cobol.mk
