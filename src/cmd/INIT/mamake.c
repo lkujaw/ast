@@ -380,10 +380,11 @@ buffer(void)
 {
 	register Buf_t*	buf;
 
-	if (buf = state.old)
+	if ((buf = state.old)) {
 		state.old = state.old->old;
-	else if (!(buf = newof(0, Buf_t, 1, 0)) || !(buf->buf = newof(0, char, CHUNK, 0)))
+	} else if (!(buf = newof(0, Buf_t, 1, 0)) || !(buf->buf = newof(0, char, CHUNK, 0))) {
 		report(3, "out of space [buffer]", NiL, (unsigned long)0);
+	}
 	buf->end = buf->buf + CHUNK;
 	buf->nxt = buf->buf;
 	return buf;
@@ -576,12 +577,15 @@ apply(Dict_t* dict, Dict_item_t* item, int (*func)(Dict_item_t*, void*), void* h
 	do
 	{
 		right = item->right;
-		if (item->left && apply(dict, item->left, func, handle))
-			return -1;
-		if ((*func)(item, handle))
-			return -1;
-	} while (item = right);
-	return 0;
+		if (item->left && apply(dict, item->left, func, handle)) {
+			return(-1);
+		}
+		if ((*func)(item, handle)) {
+			return(-1);
+		}
+	} while ((item = right));
+
+	return(0);
 }
 
 /*
@@ -671,8 +675,9 @@ view(void)
 		for (;;)
 		{
 			for (t = s; *t && *t != ':'; t++);
-			if (c = *t)
+			if ((c = *t)) {
 				*t = 0;
+			}
 			if (!state.view)
 			{
 				/*
@@ -780,7 +785,7 @@ substitute(Buf_t* buf, register char* s)
 	int		a = 0;
 	int		i;
 
-	while (c = *s++)
+	while ((c = *s++))
 	{
 		if (c == '$' && *s == '{')
 		{
@@ -797,7 +802,7 @@ substitute(Buf_t* buf, register char* s)
 				continue;
 			}
 			v = (char*)search(state.vars, t, NiL);
-			if ((c == ':' || c == '=') && (!v || c == ':' && !*v))
+			if ((c == ':' || c == '=') && (!v || (c == ':' && !*v)))
 			{
 				append(buf, b);
 				*s = c;
@@ -963,12 +968,12 @@ find(Buf_t* buf, char* file, struct stat* st)
 	int		c;
 	int		o;
 
-	if (s = status(buf, 0, file, st))
+	if ((s = status(buf, 0, file, st)))
 	{
 		report(-3, s, "find", (unsigned long)0);
 		return s;
 	}
-	if (vp = state.view)
+	if ((vp = state.view))
 	{
 		node = 0;
 		if (*file == '/')
@@ -981,7 +986,7 @@ find(Buf_t* buf, char* file, struct stat* st)
 					node = 2;
 					break;
 				}
-			} while (vp = vp->next);
+			} while ((vp = vp->next));
 		}
 		else
 			vp = vp->next;
@@ -1003,12 +1008,12 @@ find(Buf_t* buf, char* file, struct stat* st)
 				append(buf, file);
 				o = get(buf);
 				s = use(buf);
-				if (s = status(buf, o, s, st))
+				if ((s = status(buf, o, s, st)))
 				{
 					report(-3, s, "find", (unsigned long)0);
 					return s;
 				}
-			} while (vp = vp->next);
+			} while ((vp = vp->next));
 	}
 	return 0;
 }
@@ -1025,10 +1030,11 @@ bind(Rule_t* r)
 	struct stat	st;
 
 	buf = buffer();
-	if (s = find(buf, r->name, &st))
+	if ((s = find(buf, r->name, &st)))
 	{
-		if (s != r->name)
+		if (s != r->name) {
 			r->path = duplicate(s);
+		}
 		r->time = st.st_mtime;
 		r->flags |= RULE_exists;
 	}
@@ -1075,12 +1081,11 @@ push(char* file, Stdio_t* fp, int flags)
 		state.sp = state.streams;
 	else if (++state.sp >= &state.streams[elementsof(state.streams)])
 		report(3, "input stream stack overflow", NiL, (unsigned long)0);
-	if (state.sp->fp = fp)
+	if ((state.sp->fp = fp)) {
 		state.sp->file = "pipeline";
-	else if (flags & STREAM_PIPE)
+	} else if (flags & STREAM_PIPE) {
 		report(3, "pipe error", file, (unsigned long)0);
-	else if (!file || !strcmp(file, "-") || !strcmp(file, "/dev/stdin"))
-	{
+	} else if (!file || !strcmp(file, "-") || !strcmp(file, "/dev/stdin")) {
 		flags |= STREAM_KEEP;
 		state.sp->file = "/dev/stdin";
 		state.sp->fp = stdin;
@@ -1088,7 +1093,7 @@ push(char* file, Stdio_t* fp, int flags)
 	else
 	{
 		buf = buffer();
-		if (path = find(buf, file, &st))
+		if ((path = find(buf, file, &st)))
 		{
 			if (!(state.sp->fp = fopen(path, "r")))
 				report(3, "cannot read", path, (unsigned long)0);
@@ -1147,7 +1152,7 @@ execute(register char* s)
 	buf = buffer();
 	append(buf, state.shell);
 	append(buf, " -c '");
-	while (c = *s++)
+	while ((c = *s++))
 	{
 		if (c == '\'')
 		{
@@ -1156,7 +1161,7 @@ execute(register char* s)
 			{
 				add(buf, '\\');
 				add(buf, c);
-			} 
+			}
 		}
 		add(buf, c);
 	}
@@ -1233,7 +1238,7 @@ run(Rule_t* r, register char* s)
 					if (*(t + i) && *(t + i) != '/')
 					{
 						v = state.view;
-						while (v = v->next)
+						while ((v = v->next))
 						{
 							add(buf, ' ');
 							for (j = 0; j < i; j++)
@@ -1248,7 +1253,7 @@ run(Rule_t* r, register char* s)
 					}
 				}
 			}
-		} while (*s = c);
+		} while ((*s = c));
 		s = use(buf);
 	}
 	else if (x)
@@ -1258,7 +1263,7 @@ run(Rule_t* r, register char* s)
 	}
 	if (x)
 	{
-		if (c = execute(s))
+		if ((c = execute(s)))
 			dont(r, c, state.keepgoing);
 		if (status((Buf_t*)0, 0, r->name, &st))
 		{
@@ -1453,10 +1458,10 @@ require(char* lib, int dontcare)
 		{
 			if (s)
 				append(buf, s);
-			if (r = search(state.vars, "mam_cc_PREFIX_ARCHIVE", NiL))
+			if ((r = search(state.vars, "mam_cc_PREFIX_ARCHIVE", NiL)))
 				append(buf, r);
 			append(buf, lib + 2);
-			if (r = search(state.vars, "mam_cc_SUFFIX_ARCHIVE", NiL))
+			if ((r = search(state.vars, "mam_cc_SUFFIX_ARCHIVE", NiL)))
 				append(buf, r);
 			r = expand(tmp, use(buf));
 			if (!stat(r, &st))
@@ -1470,10 +1475,10 @@ require(char* lib, int dontcare)
 			if (dynamic)
 			{
 				append(buf, s);
-				if (r = search(state.vars, "mam_cc_PREFIX_SHARED", NiL))
+				if ((r = search(state.vars, "mam_cc_PREFIX_SHARED", NiL)))
 					append(buf, r);
 				append(buf, lib + 2);
-				if (r = search(state.vars, "mam_cc_SUFFIX_SHARED", NiL))
+				if ((r = search(state.vars, "mam_cc_SUFFIX_SHARED", NiL)))
 					append(buf, r);
 				r = expand(tmp, use(buf));
 				if (!stat(r, &st))
@@ -1570,7 +1575,7 @@ make(Rule_t* r)
 		z = 0;
 	buf = buffer();
 	cmd = 0;
-	while (s = input())
+	while ((s = input()))
 	{
 		for (; *s == ' '; s++);
 		for (; isdigit(*s); s++);
@@ -1617,7 +1622,7 @@ make(Rule_t* r)
 			if (q != r)
 				report(2, "improper done statement", t, (unsigned long)0);
 			attributes(r, v);
-			if (cmd && state.active && (state.force || r->time < z || !r->time && !z))
+			if (cmd && state.active && (state.force || r->time < z || (!r->time && !z)))
 			{
 				if (state.explain && !state.force)
 				{
@@ -1739,10 +1744,11 @@ initializer(char* name)
 {
 	register char*	s;
 
-	if (s = last(name, '/'))
+	if ((s = last(name, '/'))) {
 		s++;
-	else
+	} else {
 		s = name;
+	}
 	return s[0] == 'I' && s[1] == 'N' && s[2] == 'I' && s[3] == 'T';
 }
 
@@ -1826,7 +1832,7 @@ scan(Dict_item_t* item, void* handle)
 		append(buf, files[i]);
 		if (push(use(buf), (Stdio_t*)0, 0))
 		{
-			while (s = input())
+			while ((s = input()))
 			{
 				j = p = 0;
 				while (*s)
@@ -1892,7 +1898,7 @@ scan(Dict_item_t* item, void* handle)
 								k = 0;
 								break;
 							}
-					if (k && ((q = (Rule_t*)search(state.leaf, t, NiL)) && q != r || *t++ == 'l' && *t++ == 'i' && *t++ == 'b' && *t && (q = (Rule_t*)search(state.leaf, t, NiL)) && q != r))
+					if (k && (((q = (Rule_t*)search(state.leaf, t, NiL)) && q != r) || (*t++ == 'l' && *t++ == 'i' && *t++ == 'b' && *t && (q = (Rule_t*)search(state.leaf, t, NiL)) && q != r)))
 					{
 						for (t = w = r->name; *w; w++)
 							if (*w == '/')
@@ -2021,7 +2027,7 @@ recurse(char* pattern)
 	append(buf, pattern);
 	s = use(buf);
 	push("recurse", popen(s, "r"), STREAM_PIPE);
-	while (s = input())
+	while ((s = input()))
 	{
 		append(buf, s);
 		add(buf, '/');
@@ -2029,10 +2035,11 @@ recurse(char* pattern)
 		if (find(tmp, use(buf), &st))
 		{
 			r = rule(s);
-			if (t = last(r->name, '/'))
+			if ((t = last(r->name, '/'))) {
 				t++;
-			else
+			} else {
 				t = r->name;
+			}
 			r->leaf = rule(t);
 			search(state.leaf, t, r);
 		}
@@ -2171,7 +2178,7 @@ main(int argc, char** argv)
 				break;
 			}
 			for (t = s += 2; *t && *t != '='; t++);
-			if (!strncmp(s, "debug-symbols", t - s) && append(state.opt, " -G") || !strncmp(s, "strip-symbols", t - s) && append(state.opt, " -S"))
+			if ((!strncmp(s, "debug-symbols", t - s) && append(state.opt, " -G")) || (!strncmp(s, "strip-symbols", t - s) && append(state.opt, " -S")))
 			{
 				if (*t)
 				{
@@ -2282,7 +2289,7 @@ main(int argc, char** argv)
 	 * load the environment
 	 */
 
-	for (e = environ; s = *e; e++)
+	for (e = environ; (s = *e); e++)
 		for (t = s; *t; t++)
 			if (*t == '=')
 			{
@@ -2296,7 +2303,7 @@ main(int argc, char** argv)
 	 * grab the command line targets and variable definitions
 	 */
 
-	while (s = *argv++)
+	while ((s = *argv++))
 	{
 		for (t = s; *t; t++)
 			if (*t == '=')
@@ -2323,7 +2330,7 @@ main(int argc, char** argv)
 
 			if (*s == 'e' && !strncmp(s, "error 0 $(MAKEVERSION:", 22))
 				exit(1);
-			if (*s == 'r' && !strcmp(s, "recurse") || *s == 'c' && !strncmp(s, "cc-", 3))
+			if ((*s == 'r' && !strcmp(s, "recurse")) || (*s == 'c' && !strncmp(s, "cc-", 3)))
 				continue;
 			rule(s)->flags |= RULE_active;
 			state.active = 0;
