@@ -32,17 +32,31 @@ freeze ADA
 
 (ADAFLAGS) (ADAFLAGS.LINT) : .PARAMETER
 
-.SUFFIX.ada = .adb .ads
+.SUFFIX.ada = .adb
+.SUFFIX.HEADER.ada = .ads
+.SUFFIX.ada.m4 = .amb .ams
 
+/* Make ADAKRUNCH an environmental variable. */
 .EXPORT : ADAKRUNCH
 
+/* Add the current directory to search path. */
+.SOURCE.adb .SOURCE.ads : .INSERT .
+.SOURCE.ali : $$(*.SOURCE.a)
+
+.DEDUPLICATE :FUNCTION:
+	return $(%:I=$(%))
+
+.ADA.PATHS :FUNCTION:
+	return $("$(*.SOURCE.adb) $(*.SOURCE.ads) $(*.SOURCE)":P=C:H>U:/^/-I/)
+
 .SCAN.ada : .SCAN
-	X|gnatscan "$$(%)"
-	F|M$$(?:M=.*\.ad[bs]:T=F)|
+	X|gnatscan "$$(%)" "$$(.ADA.PATHS)"
+	F|M$$(?:N=*.ads:T=F)|
 
-$(.SUFFIX.ada:/^/.ATTRIBUTE.%/) : .SCAN.ada
+$("$(.SUFFIX.ada) $(.SUFFIX.HEADER.ada)":/^/.ATTRIBUTE.%/) : .SCAN.ada
+$(.SUFFIX.ada.m4:/^/.ATTRIBUTE.%) : .SCAN.m4
 
-.SOURCE.%.SCAN.ada : .FORCE $$(*.SOURCE.ada) $$(*.SOURCE)
+.SOURCE.%.SCAN.ada : .FORCE $$(*.SOURCE.adb) $$(*.SOURCE.ads) $$(*.SOURCE)
 
 .PROBE.INIT : .PKG.ADA.INIT
 
@@ -74,14 +88,19 @@ LDRUNPATH=.
 
 ADAFLAGS += $$(.INCLUDE. ada -I)
 
-for .S. in $(.SUFFIX.ada)
+for .S. in $(.SUFFIX.ada) $(.SUFFIX.HEADER.ada)
 	%.o %.ali : %$(.S.) (ADA) (.GNAT.KRUNCH) (ADAFLAGS) (ADAFLAGS.LINT) .ADA.INIT
 		$(ADA) -x ada $(.GNAT.KRUNCH) $(ADAFLAGS) $(ADAFLAGS.LINT) -c $(>)
 end
 
 /* Listing "" first forestalls infinite recursion within this metarule. */
-b~%.adb b~%.ads : "" %.ali $$(!%.ali:B:S=.ali) (ADABIND)
-	$(ADABIND) -x $(%).ali
+b~%.adb b~%.ads : "" %.ali $$(!%.ali:B:S=.ali:T!=F) (ADABIND)
+	$(ADABIND) -x $("$(.DEDUPLICATE $(!$(%).ali:B:S=.ali:T=F:D:H>U) $(*.SOURCE.a))":/^/-I/) $(*:N=$(%).ali)
 
 b~%.o b~%.ali : b~%.adb (ADA) (ADAFLAGS)
 	$(ADA) -x ada $(ADAFLAGS) -c $(>)
+
+for .S. in b s
+	%.ad$(.S.) : %.am$(.S.) (M4) (M4FLAGS)
+		$(M4) $(M4FLAGS) $(!:N=*.m4) $(>) > $(<)
+end

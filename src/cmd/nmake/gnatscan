@@ -17,7 +17,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-if test $# -ne 1; then
+if test $# -ne 2; then
     exit 1
 fi
 
@@ -36,12 +36,12 @@ GNATSCAN_TMPDIR="${TMPDIR}/gnatscan.$$"
 
 if mkdir "${GNATSCAN_TMPDIR}"; then
     ADA_SOURCE=`basename "${1}"`
-    ADA_OBJECT=`echo "${ADA_SOURCE}" | sed -e 's,.ad[bs],.o,'`
+    ADA_OBJECT=`echo "${ADA_SOURCE}" | sed -e 's,.ad[bs]$,.o,'`
     ADA_OBJECT="${GNATSCAN_TMPDIR}/${ADA_OBJECT}"
-    gcc -gnatQ ${GNATKRUNCH} -c "${1}" -o "${ADA_OBJECT}" 2>/dev/null
+    gcc -gnatQ ${GNATKRUNCH} ${2} -c "${1}" -o "${ADA_OBJECT}" 2>/dev/null
     printf ".IMPLICIT: "
     gnatls -d -s "${ADA_OBJECT}" | sed -e "s,${ADA_SOURCE},," | xargs | tr -d '\n'
-    echo
+    printf "\n"
     rm -f -r "${GNATSCAN_TMPDIR}"
 else
     exit 1
