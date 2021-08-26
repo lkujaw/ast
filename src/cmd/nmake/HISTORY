@@ -1,5 +1,12 @@
 make change history
 
+UNMERGED 2013-10-10-alpha
+
+nmake.mm: .IB foo tool -> .BI foo tool
+Reason: .IB is a valid MM macro, and the bolding of "tool" along with
+        "auto" and "config" forms a consistent allusion to a well-known
+        GNU software suite.
+
 12/01/93 3.0 release
 10/31/93 fix make.probe stdlib test for preroot systems
 	 instrument={insight,purify,sentinel,etc} instead of purify=1 

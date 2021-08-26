@@ -1,11 +1,11 @@
 # AST
 
-This is the AT&T Software Technology (AST) toolkit from AT&T Research.
-It includes many tools and libraries, such as KSH, NMAKE, SFIO,
-VMALLOC, and VCODEX.  It also includes more efficient replacements for
-many of the POSIX tools.  It was designed to be portable across many
-UNIX and UNIX-like systems and also works under [UWIN on Microsoft
-Windows](https://github.com/att/uwin).
+This is the Advanced Software Technology (AST) toolkit from AT&T
+Research.  It includes many tools and libraries, such as KSH, NMAKE,
+SFIO, VMALLOC, and VCODEX.  It also includes more efficient
+replacements for many of the POSIX tools.  It was designed to be
+portable across many UNIX and UNIX-like systems and also works under
+[UWIN on Microsoft Windows](https://github.com/att/uwin).
 
 ## Improvements and New Features
 

@@ -1,8 +1,11 @@
 .xx noindex
-.MT 4
 .TL
+Overview of AT&T nmake
+.AU "Glenn Fowler" gsf
+.AU "AST Project Contributors"
+.MT 4
 
-.H 1 "nmake Overview"
+.H 1 "Introduction"
 .BR nmake (1)
 is the standard software construction tool at AT&T and
 Alcatel-Lucent.
