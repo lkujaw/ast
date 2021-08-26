@@ -1,7 +1,7 @@
 /***********************************************************************
 *                                                                      *
 *               This software is part of the ast package               *
-*          Copyright (c) 1984-2012 AT&T Intellectual Property          *
+*          Copyright (c) 1984-2013 AT&T Intellectual Property          *
 *                      and is licensed under the                       *
 *                 Eclipse Public License, Version 2.0                  *
 *                    by AT&T Intellectual Property                     *
@@ -14,7 +14,7 @@
 *                            AT&T Research                             *
 *                           Florham Park NJ                            *
 *                                                                      *
-*                 Glenn Fowler <gsf@research.att.com>                  *
+*               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
 #pragma prototyped
@@ -160,7 +160,7 @@
 
 #define NOTIME	TMX_NOTIME	/* not checked time			*/
 #define OLDTIME	((Time_t)(1))	/* oldest valid time			*/
-#define CURTIME	tmxgettime()	/* high resolution current time		*/
+#define CURTIME	TMX_NOW		/* high resolution current time		*/
 #define CURSECS	((Seconds_t)time(NiL)) /* seconds resolution time	*/
 
 /*
