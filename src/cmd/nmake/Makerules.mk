@@ -5132,6 +5132,7 @@ end
 		CC.STATIC =
 		CC.SUFFIX.ARCHIVE = .a
 		CC.SUFFIX.DYNAMIC = ${mam_cc_SUFFIX_DYNAMIC}
+		CC.SUFFIX.OBJECT = ${mam_cc_SUFFIX_OBJECT}
 		CC.SUFFIX.SHARED = ${mam_cc_SUFFIX_SHARED}
 		_hosttype_ = ${mam_cc_HOSTTYPE}
 	end
