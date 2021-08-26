@@ -151,7 +151,7 @@ prev ${PACKAGE_ast_INCLUDE}/ast.h implicit
 done dbm.c
 meta dbm.o %.c>%.o dbm.c dbm
 prev dbm.c
-exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I${PACKAGE_ast_INCLUDE} -DERROR_CATALOG=\""kshdbm"\" -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 2007-2012 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html][--catalog?kshdbm]"\" -D_PACKAGE_ast -c dbm.c
+exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I${PACKAGE_ast_INCLUDE} -DERROR_CATALOG=\""kshdbm"\" -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 2007-2021 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html][--catalog?kshdbm]"\" -D_PACKAGE_ast -c dbm.c
 done dbm.o generated
 exec - ${AR} rc libkshdbm.a dbm.o
 exec - (ranlib libkshdbm.a) >/dev/null 2>&1 || true

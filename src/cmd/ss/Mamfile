@@ -152,7 +152,7 @@ prev ${PACKAGE_ast_INCLUDE}/ast.h implicit
 done ss.c
 meta ss.o %.c>%.o ss.c ss
 prev ss.c
-exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I${PACKAGE_ast_INCLUDE} -D_PACKAGE_ast -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 1990-2012 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html][--catalog?ss]"\" -c ss.c
+exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I${PACKAGE_ast_INCLUDE} -D_PACKAGE_ast -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 1990-2021 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html][--catalog?ss]"\" -c ss.c
 done ss.o generated
 bind -lcs
 bind -last
@@ -161,6 +161,8 @@ done ss generated
 make ssd
 make ssd.o
 make ssd.c
+make nlist.h implicit
+done nlist.h dontcare virtual
 make FEATURE/cmd implicit
 meta FEATURE/cmd features/%>FEATURE/% features/cmd cmd
 make features/cmd
@@ -206,7 +208,6 @@ done ${INSTALLROOT}/lib generated
 make ${INSTALLROOT}/lib/ssd
 prev ${INSTALLROOT}/lib
 prev ssd
-setv preserve -Dpreserve
 exec - ignore cp ssd ${INSTALLROOT}/lib/ssd
 exec - if silent find /dev/kmem -group kmem >/dev/null 2>&1; then
 exec - if chgrp kmem ${INSTALLROOT}/lib/ssd; then

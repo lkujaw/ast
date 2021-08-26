@@ -314,7 +314,7 @@ prev make.h implicit
 done option.c
 meta option.o %.c>%.o option.c option
 prev option.c
-exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I${PACKAGE_ast_INCLUDE} -DDEBUG -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 1984-2012 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html]"\" -D_PACKAGE_ast -c option.c
+exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I${PACKAGE_ast_INCLUDE} -DDEBUG -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 1984-2021 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html]"\" -D_PACKAGE_ast -c option.c
 done option.o generated
 make parse.o
 make parse.c
@@ -377,7 +377,7 @@ prev make.h implicit
 done variable.c
 meta variable.o %.c>%.o variable.c variable
 prev variable.c
-exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I${PACKAGE_ast_INCLUDE} -DDEBUG -D__OBSOLETE__=20120101 -D_PACKAGE_ast -c variable.c
+exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I${PACKAGE_ast_INCLUDE} -DDEBUG -D__OBSOLETE__=20210101 -D_PACKAGE_ast -c variable.c
 done variable.o generated
 make version.o
 make version.c
@@ -605,9 +605,11 @@ make pkg-freetype.mk
 done pkg-freetype.mk
 exec - test '' = 'pkg-freetype.mk' || ${STDCMP} 2>/dev/null -s pkg-freetype.mk ${INSTALLROOT}/lib/make/pkg-freetype.mk || { ${STDMV} ${INSTALLROOT}/lib/make/pkg-freetype.mk ${INSTALLROOT}/lib/make/pkg-freetype.mk.old 2>/dev/null || true; ${STDCP} pkg-freetype.mk ${INSTALLROOT}/lib/make/pkg-freetype.mk ;}
 done ${INSTALLROOT}/lib/make/pkg-freetype.mk generated
+make ${INSTALLROOT}/lib/make/pkg-ada.mk
 make pkg-ada.mk
 done pkg-ada.mk
 exec - test '' = 'pkg-ada.mk' || ${STDCMP} 2>/dev/null -s pkg-ada.mk ${INSTALLROOT}/lib/make/pkg-ada.mk || { ${STDMV} ${INSTALLROOT}/lib/make/pkg-ada.mk ${INSTALLROOT}/lib/make/pkg-ada.mk.old 2>/dev/null || true; ${STDCP} pkg-ada.mk ${INSTALLROOT}/lib/make/pkg-ada.mk ;}
+done ${INSTALLROOT}/lib/make/pkg-ada.mk generated
 make ${INSTALLROOT}/lib/make/pkg-cobol.mk
 make pkg-cobol.mk
 done pkg-cobol.mk

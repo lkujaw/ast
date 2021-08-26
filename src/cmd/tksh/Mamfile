@@ -2,12 +2,12 @@ info mam static 00000 1994-07-17 make (AT&T Research) 5.7 2012-06-20
 setv INSTALLROOT ../../..
 setv PACKAGE_X11 ${INSTALLROOT}
 setv PACKAGE_X11_INCLUDE ${PACKAGE_X11}/include/X11
-setv PACKAGE_X11_LIB ${PACKAGE_X11}/lib64
+setv PACKAGE_X11_LIB ${PACKAGE_X11}/lib
 setv PACKAGE_tk ${INSTALLROOT}
 setv PACKAGE_tk_INCLUDE ${PACKAGE_tk}/include
-setv PACKAGE_tk_LIB ${PACKAGE_tk}/lib64
+setv PACKAGE_tk_LIB ${PACKAGE_tk}/lib
 setv PACKAGE_tcl_INCLUDE ${INSTALLROOT}/include/tcl
-setv PACKAGE_tcl_LIB ${INSTALLROOT}/${PACKAGEROOT}/../../usr/lib64
+setv PACKAGE_tcl_LIB ${INSTALLROOT}/lib
 setv PACKAGE_shell ${INSTALLROOT}
 setv PACKAGE_shell_INCLUDE ${PACKAGE_shell}/include
 setv PACKAGE_shell_LIB ${PACKAGE_shell}/lib

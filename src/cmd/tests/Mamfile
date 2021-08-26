@@ -231,13 +231,7 @@ done testlib
 bind -ltaso
 make aso/taso.c
 make terror.h implicit
-make ${PACKAGE_ast_INCLUDE}/aso.h implicit
-prev ../../lib/libast/ast_common.h implicit
-prev ${PACKAGE_ast_INCLUDE}/prototyped.h implicit
-done ${PACKAGE_ast_INCLUDE}/aso.h
-prev ../../lib/libast/ast_common.h implicit
-prev ${PACKAGE_ast_INCLUDE}/stdio.h implicit
-done terror.h
+done terror.h virtual
 done aso/taso.c
 make aso/tlock.c
 prev terror.h implicit
@@ -249,8 +243,6 @@ make aso/tthread.c
 prev ${PACKAGE_ast_INCLUDE}/endian.h implicit
 prev terror.h implicit
 done aso/tthread.c
-exec - set +x; (ulimit -c 0) >/dev/null 2>&1 && ulimit -c 0; set -x
-exec - set +x; testlib --proc=8 --thread=8 --timeout=1 ast aso ${mam_libtaso} aso/taso.c aso/tlock.c aso/tproc.c aso/tthread.c ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I../../lib/libast -I${PACKAGE_ast_INCLUDE} ${LDFLAGS} ${mam_cc_L+-L${INSTALLROOT}/lib}
 done test.aso virtual
 make test.base64
 make base64
@@ -342,8 +334,6 @@ make cdt/tvthread.c
 prev ${PACKAGE_ast_INCLUDE}/vmalloc.h implicit
 prev cdt/dttest.h implicit
 done cdt/tvthread.c
-exec - set +x; (ulimit -c 0) >/dev/null 2>&1 && ulimit -c 0; set -x
-exec - set +x; testlib --proc=8 --thread=8 --timeout=1 ast cdt cdt/dttest.h ${mam_libtaso} ${mam_libdll} cdt/tbags.c cdt/tdeque.c cdt/tevent.c cdt/tlist.c cdt/tobag.c cdt/tqueue.c cdt/trehash.c cdt/trhbags.c cdt/tsafehash.c cdt/tsafetree.c cdt/tsearch.c cdt/tshare.c cdt/tstack.c cdt/tstringset.c cdt/tview.c cdt/tvsafehash.c cdt/tvsaferehash.c cdt/tvsafetree.c cdt/tvsharemem.c cdt/tvthread.c ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I../../lib/libast -I${PACKAGE_ast_INCLUDE} -D_PACKAGE_ast ${LDFLAGS} ${mam_cc_L+-L${INSTALLROOT}/lib}
 done test.cdt virtual
 make test.date
 make date
@@ -620,8 +610,6 @@ done sfio/twhole.c
 make sfio/twrrd.c
 prev sfio/sftest.h implicit
 done sfio/twrrd.c
-exec - set +x; (ulimit -c 0) >/dev/null 2>&1 && ulimit -c 0; set -x
-exec - set +x; testlib --proc=8 --thread=8 --timeout=1 ast sfio sfio/sftest.h ${mam_libtaso} sfio/talarm.c sfio/talign.c sfio/tappend.c sfio/tatexit.c sfio/tbadargs.c sfio/tclose.c sfio/tdisc.c sfio/terrno.c sfio/texcept.c sfio/tflags.c sfio/tfmt.c sfio/tgetr.c sfio/thole.c sfio/tleak.c sfio/tlocale.c sfio/tlongdouble.c sfio/tmmap2read.c sfio/tmode.c sfio/tmove.c sfio/tmprdwr.c sfio/tmpread.c sfio/tmprocess.c sfio/tmtsafe.c sfio/tmultiple.c sfio/tmwrite.c sfio/tnoseek.c sfio/tnotify.c sfio/topen.c sfio/tpipe.c sfio/tpipemove.c sfio/tpkrd.c sfio/tpoll.c sfio/tpool.c sfio/tpopen.c sfio/tpopenrw.c sfio/tprintf.c sfio/tpublic.c sfio/tputgetc.c sfio/tputgetd.c sfio/tputgetl.c sfio/tputgetm.c sfio/tputgetr.c sfio/tputgetu.c sfio/trcrv.c sfio/treserve.c sfio/tresize.c sfio/tscanf.c sfio/tscanf1.c sfio/tseek.c sfio/tsetbuf.c sfio/tsetfd.c sfio/tsfstr.c sfio/tshare.c sfio/tsize.c sfio/tstack.c sfio/tstatus.c sfio/tstdio.c sfio/tstkpk.c sfio/tstring.c sfio/tswap.c sfio/tsync.c sfio/ttell.c sfio/ttmp.c sfio/ttmpfile.c sfio/tungetc.c sfio/twalk.c sfio/twc.c sfio/twchar.c sfio/twhole.c sfio/twrrd.c ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I../../lib/libast -I${PACKAGE_ast_INCLUDE} -D_PACKAGE_ast ${LDFLAGS} ${mam_cc_L+-L${INSTALLROOT}/lib}
 done test.sfio virtual
 make test.vmalloc
 prev testlib
@@ -633,7 +621,10 @@ make ${PACKAGE_ast_INCLUDE}/ast_windows.h implicit
 prev windows.h implicit
 prev ${PACKAGE_ast_INCLUDE}/prototyped.h implicit
 done ${PACKAGE_ast_INCLUDE}/ast_windows.h dontcare
-prev ${PACKAGE_ast_INCLUDE}/aso.h implicit
+make ${PACKAGE_ast_INCLUDE}/aso.h implicit
+prev ../../lib/libast/ast_common.h implicit
+prev ${PACKAGE_ast_INCLUDE}/prototyped.h implicit
+done ${PACKAGE_ast_INCLUDE}/aso.h dontcare
 make ../../lib/libast/FEATURE/vmalloc implicit
 meta ../../lib/libast/FEATURE/vmalloc >FEATURE/% vmalloc
 exec - iffe -v -c '${CC} ${mam_cc_FLAGS} ${CCFLAGS}   ${LDFLAGS} ' ref ${mam_cc_L+-L${INSTALLROOT}/lib} -I${PACKAGE_ast_INCLUDE} -I${INSTALLROOT}/include ${mam_libast} : def vmalloc
@@ -687,7 +678,5 @@ done vmalloc/tstat.c
 make vmalloc/twalk.c
 prev vmalloc/vmtest.h implicit
 done vmalloc/twalk.c
-exec - set +x; (ulimit -c 0) >/dev/null 2>&1 && ulimit -c 0; set -x
-exec - set +x; testlib --proc=8 --thread=8 --timeout=1 ast vmalloc vmalloc/vmtest.h ${mam_libtaso} vmalloc/talign.c vmalloc/tcompact.c vmalloc/tek.c vmalloc/tlast.c vmalloc/tmalloc.c vmalloc/tmmopen.c vmalloc/tpool.c vmalloc/trandom.c vmalloc/tregion.c vmalloc/tresize.c vmalloc/tsafemalloc.c vmalloc/tsharemem.c vmalloc/tsmall.c vmalloc/tstat.c vmalloc/twalk.c ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I. -I../../lib/libast -I${PACKAGE_ast_INCLUDE} -D_PACKAGE_ast ${LDFLAGS} ${mam_cc_L+-L${INSTALLROOT}/lib}
 done test.vmalloc virtual
 done test dontcare virtual

@@ -12,8 +12,9 @@ Windows](https://github.com/att/uwin).
 Compared to the [official AT&T repository](https://github.com/att/ast),
 this repository features the following improvements and new features:
 
-- NMAKE support for contemporary releases of Mac OS X, including TBD
-  files and Clang-specific preprocessor features like __has_include_next.
+- NMAKE support for contemporary releases of Mac OS X, including Xcode TBD
+  files, Clang-specific preprocessor features like __has_include_next, and
+  properly ($VERSION.dylib) versioned dynamic libraries.
 - Restored support for classic UNIX systems like UNIXWARE and Solaris.
 - Ada support for NMAKE (GNAT-only at this time).
 

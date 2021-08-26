@@ -3,7 +3,7 @@
  *
  * Use this package by writing 'include pkg-ada.mk' within the Makefile.
  *
- * Copyright (c) 2021 Lev Kujawski
+ * Copyright (c) 2021, Lev Kujawski.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software")
@@ -104,3 +104,18 @@ for .S. in b s
 	%.ad$(.S.) : %.am$(.S.) (M4) (M4FLAGS)
 		$(M4) $(M4FLAGS) $(!:N=*.m4) $(>) > $(<)
 end
+
+":ADA_LIBRARY:" : .MAKE .OPERATOR
+	local libraryName libraryVersion aliDirectory
+	libraryName    := $(<:O=1)
+	libraryVersion := $(<:O=2)
+	aliDirectory   := "$$(LIBDIR)/$$(CC.PREFIX.SHARED)$(libraryName)/"
+	/* Delegate library installation to :LIBRARY:. */
+	$(libraryName) $(libraryVersion) :LIBRARY: $(>)
+	/*
+	 * Install GNAT Ada Library Information (ALI) files.
+	 *
+	 * These must be installed read-only to prevent GNAT from attempting
+	 * to update them.
+	 */
+	$(aliDirectory) :INSTALLDIR: $(>:N=*.ad[bs]:B:S=.ali) mode=a-wx

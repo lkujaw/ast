@@ -561,18 +561,24 @@ include "Scanrules.mk"
 	return $(N)
 
 .DLL.NAME. : .FUNCTION .PROBE.INIT
-	local L
+	local THE_NAME
 	if "$(CC.DLL)"
 		if "$(.SHARED.DEF.:A=.TARGET)"
-			L := $($(.SHARED.DEF.) - $(%))
+			THE_NAME := $($(.SHARED.DEF.) - $(%))
 		else
-			L := $(CC.PREFIX.SHARED)$(%:O=1)$(CC.SUFFIX.SHARED)
+			THE_NAME := $(CC.SUFFIX.SHARED)
 			if "$(%:O=2)" == "[0-9]*"
-				L := $(L).$(%:O=2)
+				/* Mac OS X: dylibs should be prefixed by version. */
+				if CC.HOSTTYPE == "darwin.*"
+					THE_NAME := .$(%:O=2)$(THE_NAME)
+				else
+					THE_NAME := $(THE_NAME).$(%:O=2)
+				end
 			end
+			THE_NAME := $(CC.PREFIX.SHARED)$(%:O=1)$(THE_NAME)
 		end
 	end
-	return $(L)
+	return $(THE_NAME)
 
 .LIB.NAME. : .FUNCTION .PROBE.INIT
 	local T
@@ -2444,20 +2450,15 @@ RECURSEROOT = .
 	return $(S:T=F) $(R:H=O:T=F)
 
 .SHARED. : .FUNCTION
-	local A B D L S T
+	local A D L S
 	if "$(.SHARED.ON.)"
 		if "$(.SHARED.DEF.:A=.TARGET)"
 			return $($(.SHARED.DEF.) $(%))
 		end
 		A := $(%:O=1)
-		B := $(CC.PREFIX.SHARED)$(%:O=2)$(CC.SUFFIX.SHARED)
 		L := $(%:O>3:N=[-+]l*)
 		$(L) : .DONTCARE
-		if "$(%:O=3)" != "[0-9]*"
-			S := $(B)
-		else
-			S := $(B).$(%:O=3)
-		end
+		S := $(.DLL.NAME. $(%:O=2) $(%:O=3))
 		$(S) : .SHARED.o $(%:N=[!-+]*=*) $(A) $$(.SHARED.BIND. $(%:O=2) $(L))
 		if ! "$(.INSTALL.$(S))" && ! "$(.NO.INSTALL.)"
 			if ! ( D = "$(.CC.DLL.DIR.$(S:C%\..*%%))" )
@@ -2471,11 +2472,12 @@ RECURSEROOT = .
 				then	$(STDMV) $(<) $(<:C%\$(CC.SUFFIX.SHARED)\.%.oo.%)
 				fi
 				$(STDCP) $(<:B:S) $(<)
-				if	$(SILENT) test "$(<)" != "$(<:C%\$(CC.SUFFIX.SHARED)\..*%$(CC.SUFFIX.SHARED)%)"
-				then	if	$(SILENT) test -f $(<:C%\$(CC.SUFFIX.SHARED)\..*%$(CC.SUFFIX.SHARED)%)
-					then	$(STDRM) $(RMFLAGS) $(<:C%\$(CC.SUFFIX.SHARED)\..*%$(CC.SUFFIX.SHARED)%)
+				/* Link versioned shared library to base name. */
+				if	$(SILENT) test "$(<)" != "$(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)"
+				then	if	$(SILENT) test -f $(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)
+					then	$(STDRM) $(RMFLAGS) $(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)
 					fi
-					$(STDLN) $(<) $(<:C%\$(CC.SUFFIX.SHARED)\..*%$(CC.SUFFIX.SHARED)%)
+					$(STDLN) $(<) $(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)
 				fi
 				chmod -w $(<)
 		end

@@ -167,7 +167,7 @@ done ${PACKAGE_ast_INCLUDE}/dsslib.h
 done xml.c
 meta xml.o %.c>%.o xml.c xml
 prev xml.c
-exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I${PACKAGE_ast_INCLUDE} -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 2010-2012 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html][--catalog?dssxml]"\" -D_PACKAGE_ast -c xml.c
+exec - ${CC} ${mam_cc_FLAGS} ${CCFLAGS} -I${PACKAGE_ast_INCLUDE} -DUSAGE_LICENSE=\""[-author?Glenn Fowler <gsf@research.att.com>][-copyright?Copyright (c) 2010-2021 AT&T Intellectual Property][-license?https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html][--catalog?dssxml]"\" -D_PACKAGE_ast -c xml.c
 done xml.o generated
 make lib.o
 make lib.c
