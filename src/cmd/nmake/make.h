@@ -622,6 +622,7 @@ typedef struct Internal_s		/* internal rule and list info	*/
 	Rule_t*		retain;		/* .RETAIN rule pointer		*/
 	Rule_t*		scan;		/* .SCAN rule pointer		*/
 	Rule_t*		script;		/* .SCRIPT rule pointer		*/
+	Rule_t*		serialize;	/* - rule pointer		*/
 	Rule_t*		special;	/* .SPECIAL rule pointer	*/
 	Rule_t*		tmplist;	/* .TMPLIST rule pointer	*/
 	Rule_t*		unbind;		/* .UNBIND rule pointer		*/

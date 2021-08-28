@@ -1,4 +1,5 @@
 13-05-28 Makerules.mk: fix MAM CC.SUFFIX.OBJECT initialization
+13-02-14 command.c: .FOREGROUND => all MAKING prereqs in parent chain done (e.g. via coshell service)
 12-06-20 O_cloexec|F_dupfd_cloexec edit
 12-05-22 bind.c,dump.c,make.c,mam.c,rule.c: fix --mam=static 3d vs VPATH diffs
 12-05-14 make.c: .IGNORE disables non-file "must"
