@@ -43,6 +43,7 @@
  * bison -pPREFIX misses YYSTYPE
  */
 
+/* Modified ifdefs to deal with different versions of yacc / bison */
 #if defined(YYSTYPE) || defined(YYBISON)
 #define EXSTYPE		YYSTYPE
 #else
