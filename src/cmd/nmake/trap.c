@@ -135,13 +135,13 @@ setwakeup(void)
 	{
 		register Alarms_t*	a;
 
-		if (a = trap.alarms)
+		if ((a = trap.alarms))
 		{
 			error(level, "ALARM  TIME                 RULE");
 			do
 			{
 				error(level, "%6s %s %s", fmtelapsed((a->time >= now) ? (a->time - now) : 0, 1), timestr(tmxsns(a->time, 0)), a->rule->name);
-			} while (a = a->next);
+			} while ((a = a->next));
 		}
 		else
 			error(level, "ALARM -- NONE");
@@ -189,7 +189,7 @@ wakeup(Seconds_t t, register List_t* p)
 			{
 				if (!x)
 				{
-					if (x = trap.freealarms)
+					if ((x = trap.freealarms))
 						trap.freealarms = trap.freealarms->next;
 					else
 						x = newof(0, Alarms_t, 1, 0);
@@ -208,13 +208,14 @@ wakeup(Seconds_t t, register List_t* p)
 				else
 					trap.alarms = x;
 			}
-		} while (p = p->next);
+		} while ((p = p->next));
 	}
-	else if (a = trap.alarms)
+	else if ((a = trap.alarms))
 	{
 		trap.alarms = 0;
-		while (x = a->next)
+		while ((x = a->next)) {
 			a = x;
+		}
 		a->next = trap.freealarms;
 		trap.freealarms = a;
 	}
