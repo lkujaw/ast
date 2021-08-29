@@ -33,7 +33,7 @@
 #define ANON(name,flags)	(void)rinternal(name,P_attribute|(flags))
 #define ASOC(field,name,flags)	internal.field=rassociate(name,flags)
 #define ATTR(field,name,flags)	internal.field=rinternal(name,P_attribute|(flags))
-#define FUNC(name,func)		((setvar(name,NiL,V_builtin|V_functional))->builtin=(func))
+#define FUNC(name,func)		((setvar(name,null,V_builtin|V_functional))->builtin=(func))
 #define INIT(field,name,flags)	internal.field=rinternal(name,flags)
 
 /*
@@ -1749,7 +1749,7 @@ initview(void)
 			message((-2, "view[%d]: %s", state.maxview, r->name));
 		}
 		state.fsview = 1;
-		setvar(external.viewnode, NiL, 0);
+		setvar(external.viewnode, null, 0);
 		if (!stat(".", &top) && !stat("...", &bot) && top.st_ino == bot.st_ino && top.st_dev == bot.st_dev)
 			state.virtualdot = 1;
 	}
@@ -1801,7 +1801,7 @@ initview(void)
 					}
 					if (!pwd)
 					{
-						setvar(external.viewnode, NiL, 0);
+						setvar(external.viewnode, null, 0);
 						break;
 					}
 				}

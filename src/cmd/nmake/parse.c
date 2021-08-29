@@ -2386,7 +2386,7 @@ assertion(char* lhs, Rule_t* opr, char* rhs, char* act, int op)
 				{
 					*s = 0;
 					if (nametype(r->name, NiL) & NAME_identifier)
-						setvar(r->name, NiL, V_scan);
+						setvar(r->name, null, V_scan);
 					*s = '=';
 				}
 			}

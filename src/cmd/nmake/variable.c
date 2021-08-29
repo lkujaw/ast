@@ -558,7 +558,7 @@ getval(register char * s, int op)
                 }
                 else
                 {
-                    v = setvar(r->name, NiL, V_functional);
+                    v = setvar(r->name, null, V_functional);
                 }
             }
             *t++ = ' ';
@@ -688,179 +688,210 @@ resetvar(register Var_t * pVar, char * const pszValue, int fAppend)
 Var_t *
 setvar(char * s, char * v, int flags)
 {
-    register char *  t;
-    register Var_t * p;
-    register int     n;
-    int              isid;
-    int              undefined;
+    register Var_t * p = NiL;
 
-    if (!v)
-        v = null;
-
-    /*
-     * the name determines the variable type
-     */
-
-    n = nametype(s, NiL);
-    if (n & NAME_statevar)
+    ASSERT(s != NiL)
     {
-        bindstate(makerule(s), v);
-        return 0;
-    }
-    if (!(isid = !!(n & NAME_identifier))
-        && !(n & (NAME_variable | NAME_intvar))
-        && !istype(*s, C_VARIABLE1 | C_ID1 | C_ID2) && *s != '(')
-    {
-        if (flags & V_retain)
-            return 0;
-        error(2, "%s: invalid variable name", s);
-    }
+        /*
+         * the name determines the variable type
+         */
+        register int n = nametype(s, NiL);
 
-    /*
-     * check for a previous definition
-     */
-
-    if ((undefined = !(p = getvar(s))))
-    {
-        newvar(p);
-        if (p->property & V_import)
+        ASSERT(v != NiL)
         {
-            p->property &= ~V_import;
-            p->value = 0;
-        }
-        else if (p->value)
-            *p->value = 0;
-        p->name    = putvar(0, p);
-        p->builtin = 0;
-    }
+            int isid;
+            int undefined;
 
-    /*
-     * check the variable attributes for precedence
-     */
-
-    if (flags & V_auxiliary)
-    {
-        if (!p->value)
-        {
-            p->value = null;
-            p->property |= V_import;
-        }
-        p->property |= V_auxiliary;
-        p = auxiliary(s, 1);
-    }
-    p->property |= flags & (V_builtin | V_functional);
-    if (state.user || state.readonly || undefined
-        || (!(p->property & V_readonly)
-            && ((!state.pushed && !(p->property & V_import))
-                || state.global != 1 || (flags & V_import)
-                || (state.base && !state.init))))
-    {
-        if (flags & V_import)
-        {
-            if (p->property & V_free)
+            if (n & NAME_statevar)
             {
-                p->property &= ~V_free;
-                free(p->value);
+                bindstate(makerule(s), v);
+                return NiL;
             }
-            p->value = v;
-        }
-        else
-        {
-            t = v;
-            if (state.user)
+
+            if (!(isid = !!(n & NAME_identifier))
+                && !(n & (NAME_variable | NAME_intvar))
+                && !istype(*s, C_VARIABLE1 | C_ID1 | C_ID2) && *s != '(')
             {
-                p->property &= ~V_append;
-            }
-            if ((n = (flags & V_append)))
-            {
-                if (state.reading && !state.global && isid)
-                    p->property |= V_frozen;
-                if (p->value && *p->value)
+                if (flags & V_retain)
                 {
-                    if (*v)
-                    {
-                        sfprintf(internal.nam, "%s %s", p->value, v);
-                        t = sfstruse(internal.nam);
-                    }
-                    else
-                        t = p->value;
+                    return NiL;
                 }
+                error(2, "%s: invalid variable name", s);
             }
-            resetvar(p, t, n);
-        }
-        if (flags & V_import)
-            p->property |= V_import;
-        else
-            p->property &= ~V_import;
-        if (state.readonly)
-        {
-            p->property |= V_readonly;
-            if (flags & V_append)
-                p->property |= V_append;
-        }
-        else if (state.init)
-            p->property |= V_compiled;
-        else
-            p->property &= ~V_compiled;
-        if ((flags & V_scan) && !(p->property & V_scan))
-        {
-            if (isid && state.user <= 1)
-            {
-                p->property |= V_scan;
-                staterule(VAR, NiL, p->name, -1);
-            }
-            else
-                error(1, "%s: not marked as candidate state variable", p->name);
-        }
-        if (state.vardump && !(p->property & V_import))
-            dumpvar(sfstdout, p);
-    }
-    else if (state.reading)
-    {
-        if (p->property & V_readonly)
-        {
+
             /*
-             * save old value for makefile compiler
+             * check for a previous definition
              */
 
-            s = (p->property & V_oldvalue) ? getold(p->name) : (char *)0;
-            t = v;
-            if (flags & V_append)
+            if ((undefined = !(p = getvar(s))))
             {
-                if (state.reading && !state.global && isid)
-                    p->property |= V_frozen;
-                if (s && *s)
+                newvar(p);
+                if (p->property & V_import)
                 {
-                    if (*v)
+                    p->property &= ~V_import;
+                    p->value = 0;
+                }
+                else if (p->value)
+                {
+                    *p->value = 0;
+                }
+                p->name    = putvar(0, p);
+                p->builtin = 0;
+            }
+
+            /*
+             * check the variable attributes for precedence
+             */
+
+            if (flags & V_auxiliary)
+            {
+                if (!p->value)
+                {
+                    p->value = null;
+                    p->property |= V_import;
+                }
+                p->property |= V_auxiliary;
+                p = auxiliary(s, 1);
+            }
+            p->property |= flags & (V_builtin | V_functional);
+            if (state.user || state.readonly || undefined
+                || (!(p->property & V_readonly)
+                    && ((!state.pushed && !(p->property & V_import))
+                        || state.global != 1 || (flags & V_import)
+                        || (state.base && !state.init))))
+            {
+                if (flags & V_import)
+                {
+                    if (p->property & V_free)
                     {
-                        sfprintf(internal.nam, "%s %s", s, v);
-                        t = sfstruse(internal.nam);
+                        p->property &= ~V_free;
+                        free(p->value);
+                    }
+                    p->value = v;
+                }
+                else
+                {
+                    register char * t = v;
+
+                    if (state.user)
+                    {
+                        p->property &= ~V_append;
+                    }
+                    if ((n = (flags & V_append)))
+                    {
+                        if (state.reading && !state.global && isid)
+                            p->property |= V_frozen;
+                        if (p->value && *p->value)
+                        {
+                            if (*v)
+                            {
+                                sfprintf(internal.nam, "%s %s", p->value, v);
+                                t = sfstruse(internal.nam);
+                            }
+                            else
+                            {
+                                t = p->value;
+                            }
+                        }
+                    }
+                    resetvar(p, t, n);
+                }
+                if (flags & V_import)
+                {
+                    p->property |= V_import;
+                }
+                else
+                {
+                    p->property &= ~V_import;
+                }
+                if (state.readonly)
+                {
+                    p->property |= V_readonly;
+                    if (flags & V_append)
+                    {
+                        p->property |= V_append;
+                    }
+                }
+                else if (state.init)
+                {
+                    p->property |= V_compiled;
+                }
+                else
+                {
+                    p->property &= ~V_compiled;
+                }
+                if ((flags & V_scan) && !(p->property & V_scan))
+                {
+                    if (isid && state.user <= 1)
+                    {
+                        p->property |= V_scan;
+                        staterule(VAR, NiL, p->name, -1);
                     }
                     else
-                        t = s;
+                    {
+                        error(1,
+                              "%s: not marked as candidate state variable",
+                              p->name);
+                    }
+                }
+                if (state.vardump && !(p->property & V_import))
+                {
+                    dumpvar(sfstdout, p);
                 }
             }
-            putold(p->name, strdup(t));
-            p->property |= V_oldvalue;
-            if ((p->property & V_append) && p->value && *p->value)
+            else if (state.reading)
             {
-                sfprintf(internal.nam,
-                         "%s %s",
-                         t,
-                         p->value + (s ? strlen(s) + 1 : 0));
-                resetvar(p, sfstruse(internal.nam), 1);
+                if (p->property & V_readonly)
+                {
+                    /*
+                     * save old value for makefile compiler
+                     */
+                    register char * t = v;
+
+                    s = (p->property & V_oldvalue) ? getold(p->name)
+                                                   : (char *)0;
+                    if (flags & V_append)
+                    {
+                        if (state.reading && !state.global && isid)
+                        {
+                            p->property |= V_frozen;
+                        }
+                        if (s && *s)
+                        {
+                            if (*v)
+                            {
+                                sfprintf(internal.nam, "%s %s", s, v);
+                                t = sfstruse(internal.nam);
+                            }
+                            else
+                            {
+                                t = s;
+                            }
+                        }
+                    }
+                    putold(p->name, strdup(t));
+                    p->property |= V_oldvalue;
+                    if ((p->property & V_append) && p->value && *p->value)
+                    {
+                        sfprintf(internal.nam,
+                                 "%s %s",
+                                 t,
+                                 p->value + (s ? strlen(s) + 1 : 0));
+                        resetvar(p, sfstruse(internal.nam), 1);
+                    }
+                }
+                if (isid && (flags & V_scan) && state.makefile)
+                {
+                    p->property |= V_scan;
+                    staterule(VAR, NiL, p->name, -1);
+                }
+            }
+            if (!p->value)
+            {
+                p->value = strdup(null);
+                p->property |= V_free;
             }
         }
-        if (isid && (flags & V_scan) && state.makefile)
-        {
-            p->property |= V_scan;
-            staterule(VAR, NiL, p->name, -1);
-        }
-    }
-    if (!p->value)
-    {
-        p->value = strdup(null);
-        p->property |= V_free;
     }
     return p;
 }
