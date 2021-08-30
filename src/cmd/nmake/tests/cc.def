@@ -4,12 +4,13 @@ INCLUDE test.def
 
 KEEP usrbin cc.probe pp.probe pkg-cobol.mk
 
-export ARFLAGS=cr PATH=$TWD/usrbin:$PATH
+export ARFLAGS=cr
+export PATH="${TWD}/usrbin:$PATH"
 export MAKE_OPTIONS="$MAKE_OPTIONS CC.PROBE=$TWD/cc.probe CC.PROBEPP=$TWD/pp.probe"
 
 TEST 00 'initialize cc intercepts'
 
-	cat > $TWD/cc.probe <<'!'
+	cat > "${TWD}/cc.probe" <<'!'
 CC.CC = cc
 CC.NATIVE = cc
 CC.EXECTYPE = regression.test
@@ -61,7 +62,6 @@ CC.SHARED.REGISTRY.PATH = $(LIBDIR)/registry.ld
 CC.SHELLMAGIC =
 CC.SIZE = size
 CC.STATIC =
-CC.STDINCLUDE = /usr/include
 CC.STDLIB = /usr/lib /lib
 CC.STRICT =
 CC.STRIP = strip
@@ -82,6 +82,7 @@ CC.WARN = -fullwarn
 CC.PREROOT =
 CC.UNIVERSE = att
 !
+	echo `probe -l C make cc|grep CC\.STDINCLUDE` >> "${TWD}/cc.probe"
 
 	cat > $TWD/pp.probe <<'!'
 /* cc
