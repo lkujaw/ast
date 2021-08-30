@@ -15,7 +15,8 @@ TEST 01 'local generated stdio.h'
 stdio.h : stdio
 	cp $(*) $(<)
 '
-		INPUT t.c $'#include "/usr/include/stdio.h"'
+		STDIO_H=`echo '#include <stdio.h>' | cpp - | grep '/stdio.h' | cut -d \" -f2 | head -n 1`
+		INPUT t.c $'#include "'"${STDIO_H:-/usr/include/stdio.h}"'"'
 		INPUT stdio
 
 	EXEC	--silent --nojobs
