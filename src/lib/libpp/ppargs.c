@@ -134,7 +134,7 @@ USAGE_LICENSE
 "[P!:sync?Emit line syncs.]"
 "[U:undefine?Remove the definition for the macro \aname\a.]:[name]"
 
-"[A:assert?Enter the assertion via \b#assert\b for system V"
+"[A:assert?Enter the assertion via \b#assert\b for UNIX System V"
 "	compatibility.]:[assertion]"
 "[E:preprocess?Ignored for compatibility with ancient compilers.]"
 "[H:include-reference?Emit \b#include\b file paths on the standard error,"

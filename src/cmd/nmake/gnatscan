@@ -18,6 +18,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 if test $# -ne 2; then
+    echo "$0: Insufficient arguments" >&2
     exit 1
 fi
 
@@ -32,17 +33,21 @@ if test -n "${ADAKRUNCH}"; then
     GNATKRUNCH="-gnatk${ADAKRUNCH}"
 fi
 
-GNATSCAN_TMPDIR="${TMPDIR}/gnatscan.$$"
+if test -z "${USER}" -a -z "${LOGNAME}"; then
+    USER="unknown"
+fi
+
+GNATSCAN_TMPDIR="${TMPDIR}/gnatscan.${USER:-$LOGNAME}.$$"
 
 if mkdir "${GNATSCAN_TMPDIR}"; then
+    trap 'rm -f -r ${GNATSCAN_TMPDIR}' EXIT
     ADA_SOURCE=`basename "${1}"`
     ADA_OBJECT=`echo "${ADA_SOURCE}" | sed -e 's,.ad[bs]$,.o,'`
     ADA_OBJECT="${GNATSCAN_TMPDIR}/${ADA_OBJECT}"
     gcc -gnatQ ${GNATKRUNCH} ${2} -c "${1}" -o "${ADA_OBJECT}" 2>/dev/null
     printf ".IMPLICIT: "
     gnatls -d -s "${ADA_OBJECT}" | sed -e "s,${ADA_SOURCE},," | xargs | tr -d '\n'
-    printf "\n"
-    rm -f -r "${GNATSCAN_TMPDIR}"
+    echo
 else
     exit 1
 fi

@@ -2,90 +2,21 @@ set stdio
 
 # Flag systems that omit necessary definitions such as u_long
 # when _POSIX_SOURCE or _XOPEN_SOURCE are defined.
-# Affected: Mac OS X, UnixWare.
+# Affected: *BSD, Mac OS X, UNIXWARE.
 typ u_long
 
-if tst note{ _ALL_SOURCE & _POSIX_SOURCE & _POSIX_C_SOURCE & _XOPEN_SOURCE & _GNU_SOURCE & _DARWIN_C_SOURCE & __EXTENSIONS__ works }end compile{
-		#define _ALL_SOURCE		1
+if tst note{ _POSIX_SOURCE & _POSIX_C_SOURCE & _XOPEN_SOURCE & __EXTENSIONS__ & _ALL_SOURCE & _DARWIN_C_SOURCE & _GNU_SOURCE works }end compile{
 		#define _POSIX_SOURCE		1
 		#define _POSIX_C_SOURCE		21000101L
 		#define _XOPEN_SOURCE		9900
-		#define _GNU_SOURCE		1
-		#define _DARWIN_C_SOURCE	1
+                /* Enable extensions on Solaris and derivatives. */
 		#define __EXTENSIONS__		1
-		#include <sys/types.h>
-		#include <sys/stat.h>
-		#include <stdlib.h>
-		#include <unistd.h>
-		#include <fcntl.h>
-		#ifdef _typ_u_long
-		u_long x;
-		#endif
-	}end {
-		#ifndef _ALL_SOURCE
+                /* Enable extensions on AIX. */
 		#define _ALL_SOURCE		1
-		#endif
-		#ifndef _POSIX_SOURCE
-		#define _POSIX_SOURCE		1
-		#endif
-		#ifndef _POSIX_C_SOURCE
-		#define _POSIX_C_SOURCE		21000101L
-		#endif
-		#ifndef _XOPEN_SOURCE
-		#define _XOPEN_SOURCE		9900
-		#endif
-		#ifndef _GNU_SOURCE
-		#define _GNU_SOURCE		1
-		#endif
-		#ifndef _DARWIN_C_SOURCE
+                /* Enable extensions on Darwin and derivatives. */
 		#define _DARWIN_C_SOURCE	1
-		#endif
-		#ifndef __EXTENSIONS__
-		#define __EXTENSIONS__		1
-		#endif
-	}
-elif tst note{ _ALL_SOURCE & _POSIX_SOURCE & _XOPEN_SOURCE & _GNU_SOURCE & _DARWIN_C_SOURCE & __EXTENSIONS__ works }end compile{
-		#define _ALL_SOURCE		1
-		#define _POSIX_SOURCE		1
-		#define _XOPEN_SOURCE		9900
+                /* Enable GNU C library extensions. */
 		#define _GNU_SOURCE		1
-		#define _DARWIN_C_SOURCE	1
-		#define __EXTENSIONS__		1
-		#include <sys/types.h>
-		#include <sys/stat.h>
-		#include <stdlib.h>
-		#include <unistd.h>
-		#include <fcntl.h>
-		#ifdef _typ_u_long
-		u_long x;
-		#endif
-	}end {
-		#ifndef _ALL_SOURCE
-		#define _ALL_SOURCE		1
-		#endif
-		#ifndef _POSIX_SOURCE
-		#define _POSIX_SOURCE		1
-		#endif
-		#ifndef _XOPEN_SOURCE
-		#define _XOPEN_SOURCE		9900
-		#endif
-		#ifndef _GNU_SOURCE
-		#define _GNU_SOURCE		1
-		#endif
-		#ifndef _DARWIN_C_SOURCE
-		#define _DARWIN_C_SOURCE	1
-		#endif
-		#ifndef __EXTENSIONS__
-		#define __EXTENSIONS__		1
-		#endif
-	}
-elif tst note{ _POSIX_SOURCE & _POSIX_C_SOURCE & _XOPEN_SOURCE & _GNU_SOURCE & _DARWIN_C_SOURCE & __EXTENSIONS__ works }end compile{
-		#define _POSIX_SOURCE		1
-		#define _POSIX_C_SOURCE		21000101L
-		#define _XOPEN_SOURCE		9900
-		#define _GNU_SOURCE		1
-		#define _DARWIN_C_SOURCE	1
-		#define __EXTENSIONS__		1
 		#include <sys/types.h>
 		#include <sys/stat.h>
 		#include <stdlib.h>
@@ -104,14 +35,87 @@ elif tst note{ _POSIX_SOURCE & _POSIX_C_SOURCE & _XOPEN_SOURCE & _GNU_SOURCE & _
 		#ifndef _XOPEN_SOURCE
 		#define _XOPEN_SOURCE		9900
 		#endif
-		#ifndef _GNU_SOURCE
-		#define _GNU_SOURCE		1
+		#ifndef __EXTENSIONS__
+		#define __EXTENSIONS__		1
+		#endif
+		#ifndef _ALL_SOURCE
+		#define _ALL_SOURCE		1
 		#endif
 		#ifndef _DARWIN_C_SOURCE
 		#define _DARWIN_C_SOURCE	1
 		#endif
+		#ifndef _GNU_SOURCE
+		#define _GNU_SOURCE		1
+		#endif
+	}
+elif tst note{ _POSIX_SOURCE & _XOPEN_SOURCE & __EXTENSIONS__ & _ALL_SOURCE & _DARWIN_C_SOURCE & _GNU_SOURCE works }end compile{
+		#define _POSIX_SOURCE		1
+		#define _XOPEN_SOURCE		9900
+		#define __EXTENSIONS__		1
+		#define _ALL_SOURCE		1
+		#define _DARWIN_C_SOURCE	1
+		#define _GNU_SOURCE		1
+		#include <sys/types.h>
+		#include <sys/stat.h>
+		#include <stdlib.h>
+		#include <unistd.h>
+		#include <fcntl.h>
+		#ifdef _typ_u_long
+		u_long x;
+		#endif
+	}end {
+		#ifndef _POSIX_SOURCE
+		#define _POSIX_SOURCE		1
+		#endif
+		#ifndef _XOPEN_SOURCE
+		#define _XOPEN_SOURCE		9900
+		#endif
 		#ifndef __EXTENSIONS__
 		#define __EXTENSIONS__		1
+		#endif
+		#ifndef _ALL_SOURCE
+		#define _ALL_SOURCE		1
+		#endif
+		#ifndef _DARWIN_C_SOURCE
+		#define _DARWIN_C_SOURCE	1
+		#endif
+		#ifndef _GNU_SOURCE
+		#define _GNU_SOURCE		1
+		#endif
+	}
+elif tst note{ _POSIX_SOURCE & _POSIX_C_SOURCE & _XOPEN_SOURCE & __EXTENSIONS__ & _DARWIN_C_SOURCE & _GNU_SOURCE works }end compile{
+		#define _POSIX_SOURCE		1
+		#define _POSIX_C_SOURCE		21000101L
+		#define _XOPEN_SOURCE		9900
+		#define __EXTENSIONS__		1
+		#define _DARWIN_C_SOURCE	1
+		#define _GNU_SOURCE		1
+		#include <sys/types.h>
+		#include <sys/stat.h>
+		#include <stdlib.h>
+		#include <unistd.h>
+		#include <fcntl.h>
+		#ifdef _typ_u_long
+		u_long x;
+		#endif
+	}end {
+		#ifndef _POSIX_SOURCE
+		#define _POSIX_SOURCE		1
+		#endif
+		#ifndef _POSIX_C_SOURCE
+		#define _POSIX_C_SOURCE		21000101L
+		#endif
+		#ifndef _XOPEN_SOURCE
+		#define _XOPEN_SOURCE		9900
+		#endif
+		#ifndef __EXTENSIONS__
+		#define __EXTENSIONS__		1
+		#endif
+		#ifndef _DARWIN_C_SOURCE
+		#define _DARWIN_C_SOURCE	1
+		#endif
+		#ifndef _GNU_SOURCE
+		#define _GNU_SOURCE		1
 		#endif
 	}
 elif tst note{ _POSIX_SOURCE & _XOPEN_SOURCE & __EXTENSIONS__ works }end compile{
