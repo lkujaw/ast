@@ -136,7 +136,7 @@ mkdir $TWD/usrbin
 
 cmd=$(whence cc 2>/dev/null)
 [[ $cmd ]] || cmd=gcc
-cat > $TWD/usrbin/cc <<!
+cat > "${TWD}/usrbin/cc" <<!
 case " \$* " in
 *" -shared "*)
 	while	:
@@ -155,7 +155,8 @@ case " \$* " in
 	;;
 esac
 !
-chmod +x $TWD/usrbin/cc
+chmod +x "${TWD}/usrbin/cc"
+probe -g C make "${TWD}/usrbin/cc"
 
 if ! whence ranlib >/dev/null 2>&1
 then	cat > $TWD/usrbin/ranlib <<'!'

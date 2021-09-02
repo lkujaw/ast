@@ -561,24 +561,24 @@ include "Scanrules.mk"
 	return $(N)
 
 .DLL.NAME. : .FUNCTION .PROBE.INIT
-	local THE_NAME
+	local libraryName
 	if "$(CC.DLL)"
 		if "$(.SHARED.DEF.:A=.TARGET)"
-			THE_NAME := $($(.SHARED.DEF.) - $(%))
+			libraryName := $($(.SHARED.DEF.) - $(%))
 		else
-			THE_NAME := $(CC.SUFFIX.SHARED)
+			libraryName := $(CC.SUFFIX.SHARED)
 			if "$(%:O=2)" == "[0-9]*"
-				/* Mac OS X: dylibs should be prefixed by version. */
+				# Mac OS X: dylibs should be prefixed by version.
 				if CC.HOSTTYPE == "darwin.*"
-					THE_NAME := .$(%:O=2)$(THE_NAME)
+					libraryName := .$(%:O=2)$(libraryName)
 				else
-					THE_NAME := $(THE_NAME).$(%:O=2)
+					libraryName := $(libraryName).$(%:O=2)
 				end
 			end
-			THE_NAME := $(CC.PREFIX.SHARED)$(%:O=1)$(THE_NAME)
+			libraryName := $(CC.PREFIX.SHARED)$(%:O=1)$(libraryName)
 		end
 	end
-	return $(THE_NAME)
+	return $(libraryName)
 
 .LIB.NAME. : .FUNCTION .PROBE.INIT
 	local T
@@ -2030,7 +2030,7 @@ RECURSEROOT = .
 	end
 
 /*
- * install in lhs dir using rhs pattern to select 
+ * install in lhs dir using rhs pattern to select
  */
 
 ":INSTALLMAP:" : .MAKE .OPERATOR
@@ -2472,7 +2472,7 @@ RECURSEROOT = .
 				then	$(STDMV) $(<) $(<:C%\$(CC.SUFFIX.SHARED)\.%.oo.%)
 				fi
 				$(STDCP) $(<:B:S) $(<)
-				/* Link versioned shared library to base name. */
+				# Link versioned shared library to base name.
 				if	$(SILENT) test "$(<)" != "$(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)"
 				then	if	$(SILENT) test -f $(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)
 					then	$(STDRM) $(RMFLAGS) $(<:C,\.[^/]*$,$(CC.SUFFIX.SHARED),)

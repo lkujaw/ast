@@ -631,23 +631,23 @@ readline(int lead)
 			{
 			case EOF:
 			eof:
-				if (q == COMMENT)
+				if (COMMENT == q) {
 					error(lead > 0 ? 2 : 1, "EOF in %c comment", q);
-				else if (q)
+				} else if (q) {
 					error(lead > 0 ? 2 : 1, "EOF in %c...%c quote starting at line %d", q, q, start);
-				else if (sfstrtell(pp->ip) > line)
+				} else if (sfstrtell(pp->ip) > line) {
 					error(lead > 0 ? 2 : 1, "file does not end with newline");
-				if (sfstrtell(pp->ip) > line)
-				{
+				}
+				if (sfstrtell(pp->ip) > line) {
 					sfputc(pp->ip, 0);
 					return sfstrbase(pp->ip) + line;
 				}
 				return 0;
 			case '\r':
-				if ((c = sfgetc(pp->fp)) != '\n')
-				{
-					if (c != EOF)
+				if ((c = sfgetc(pp->fp)) != '\n') {
+					if (c != EOF) {
 						sfungetc(pp->fp, c);
+					}
 					c = '\r';
 					break;
 				}
@@ -655,16 +655,22 @@ readline(int lead)
 			case '\n':
 			newline:
 				error_info.line++;
-				if (!q || q == COMMENT)
+				if (!q || COMMENT == q)
 				{
 					t = sfstrseek(pp->ip, 0, SEEK_CUR);
 					s = sfstrbase(pp->ip) + line;
-					while (t > s && (*(t - 1) == ' ' || *(t - 1) == '\t'))
-						t--;
+					while (t > s && (*(t - 1) == ' ' || *(t - 1) == '\t')) {
+						--t;
+					}
 					sfstrseek(pp->ip, t - sfstrbase(pp->ip), SEEK_SET);
+					if (COMMENT == q && t == s) {
+						/* EXTENSION: skip '#' comment lines. */
+						q = 0;
+						continue;
+					}
 					sfputc(pp->ip, 0);
 					s = sfstrbase(pp->ip) + line;
-					if (*s == COMMENT)
+					if (COMMENT == *s)
 					{
 						directive(s);
 						*s = 0;
@@ -672,8 +678,9 @@ readline(int lead)
 					}
 					return s;
 				}
-				if (pp->prompt)
+				if (pp->prompt) {
 					error(ERROR_PROMPT, PS2);
+				}
 				break;
 			case '\\':
 				switch (c = sfgetc(pp->fp))

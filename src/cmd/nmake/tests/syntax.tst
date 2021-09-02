@@ -74,27 +74,15 @@ print : $(<) 5 :"
 : test-C-3 1 :
 "print : $(<) 1 :"
 === test-make-1 ===
-"
-
-
-print : $(<) 4 :"
+"print : $(<) 4 :"
 : test-make-1 4 :
-"
-
-
-print : $(<) 4 :"
+"print : $(<) 4 :"
 === test-make-2 ===
 "print : $(<) 1 :
-
-
-
 print : $(<) 5 :"
 : test-make-2 1 :
 : test-make-2 5 :
 "print : $(<) 1 :
-
-
-
 print : $(<) 5 :"
 === test-make-3 ===
 "print : $(<) 1 :"
