@@ -1,0 +1,27 @@
+INIT iffe ...................................  162 tests    0 errors
+INIT mamake .................................    1 test     0 errors
+cpp .........................................  186 tests    0 errors
+nmake assert ................................   95 tests    0 errors
+nmake assign ................................   36 tests    0 errors
+nmake attribute .............................   50 tests    0 errors
+nmake automatic .............................    5 tests    0 errors
+nmake baserules .............................   19 tests    0 errors
+nmake common ................................   55 tests    0 errors
+nmake diagnostics ...........................   74 tests    0 errors
+nmake edit ..................................  107 tests    0 errors
+nmake immediate .............................    4 tests    0 errors
+nmake implicit ..............................   13 tests    0 errors
+nmake internal ..............................   14 tests    0 errors
+nmake interrupt .............................   18 tests    0 errors
+nmake metarule ..............................   62 tests    0 errors
+nmake option ................................  123 tests    0 errors
+nmake panic .................................    2 tests    0 errors
+nmake prereq ................................   37 tests    0 errors
+nmake quoting ...............................    2 tests    0 errors
+nmake recurse ...............................    7 tests    0 errors
+nmake scan ..................................   41 tests    0 errors
+nmake shell .................................    8 tests    0 errors
+nmake state .................................   59 tests    0 errors
+nmake statement .............................   21 tests    0 errors
+nmake syntax ................................   13 tests    0 errors
+nmake view ..................................   45 tests    0 errors

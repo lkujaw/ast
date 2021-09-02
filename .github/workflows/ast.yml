@@ -22,3 +22,12 @@ jobs:
 
     - name: Build
       run: ./bin/package flat make
+
+    - name: Test
+      run: ./bin/package flat test nmake
+
+    - name: Report
+      run: ./bin/package flat results test 2>&1 | tail -n +2 | tee test.log
+
+    - name: Validate
+      run: cmp test.log .github/conform.log
