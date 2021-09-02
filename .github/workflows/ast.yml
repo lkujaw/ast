@@ -7,10 +7,13 @@ on:
     branches: [ trunk ]
 
 jobs:
-  build:
+  ubuntu:
 
     runs-on: ubuntu-20.04
 
+    env:
+      REGRESSFLAGS: -v
+      TZ: UTC
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -21,13 +24,13 @@ jobs:
         sudo apt-get install libdb5.3-dev
 
     - name: Build
-      run: ./bin/package flat make
+      run: bin/package make
 
     - name: Test
-      run: ./bin/package flat test nmake
+      run: bin/package test nmake
 
     - name: Report
-      run: ./bin/package flat results test 2>&1 | tail -n +2 | tee test.log
+      run: bin/package results test | tail -n +2 | tee test.log
 
     - name: Validate
       run: cmp test.log .github/conform.log
