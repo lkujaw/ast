@@ -16,7 +16,7 @@ rules
  *	the flags for command $(XYZ) are $(XYZFLAGS)
  */
 
-.ID. = "@(#)$Id: Makerules (AT&T Research) 2012-06-08 $"
+.ID. = "@(#)$Id: Makerules (AT&T Research) 2013-10-17 $"
 
 .RULESVERSION. := $(MAKEVERSION:@/.* //:/-//G)
 
@@ -87,7 +87,7 @@ set virtual:=1
 
 .OPTION.COMPATIBILITY : .MAKE .VIRTUAL .FORCE
 	local N O
-	if .MAKEVERSION. < 20121221
+	if .MAKEVERSION. < 20150101
 		O =
 		N =
 		if ! "$(-?clobber)" && "$("clobber":T=QV)"
@@ -199,7 +199,13 @@ set virtual:=1
 		error $(-view-verify) viewpath not set
 	end
 	if "$(-mam:N=(regress|static)*)"
-		.MAMROOT. := $(PWD:C@.*/src/@/src/@:C@/[^/]*@/..@G:C@/@@)
+		if "$(PWD)/" == "$(INSTALLROOT)/*"
+			.MAMROOT. := $(".":P=R=$(INSTALLROOT))
+		elif "$(PWD)/" == "$(PACKAGEROOT)/*"
+			.MAMROOT. := $(".":P=R=$(PACKAGEROOT))
+		else
+			.MAMROOT. := $(PWD:C@.*/src/@/src/@:C@/[^/]*@/..@G:C@/@@)
+		end
 		.MAKE : .MAM.LOAD
 	end
 	PAXFLAGS &= $$(MAKEPATH:C@:@ @G:N!=...*:C@.*@-s\@&/*\@\@@) $$(PWD:C@.*@-s\@&/*\@\@@)
@@ -4152,10 +4158,16 @@ PACKAGES : .SPECIAL .FUNCTION
 	if "$(-mam:N=dynamic*)"
 		.MAM.INSTALLROOT := $(INSTALLROOT:N=$(HOME):?$HOME?$(INSTALLROOT)?)
 		print -um setv INSTALLROOT $(.MAM.INSTALLROOT)
+		.MAM.PACKAGEROOT := $(PACKAGEROOT:N=$(HOME):?$HOME?$(PACKAGEROOT)?)
+		print -um setv PACKAGEROOT $(.MAM.PACKAGEROOT)
 	end
 	.MAMEDIT. =
 	if "$(INSTALLROOT:N=..*(/*))"
 		.MAMROOT. := $(INSTALLROOT)
+	elif "$(PWD)/" == "$(INSTALLROOT)/*"
+		.MAMROOT. := $(".":P=R=$(INSTALLROOT))
+	elif "$(PWD)/" == "$(PACKAGEROOT)/*"
+		.MAMROOT. := $(".":P=R=$(PACKAGEROOT))
 	else
 		.MAMROOT. := $(PWD:C@.*/src/@/src/@:C@/[^/]*@/..@G:C@/@@)
 	end
@@ -5090,8 +5102,12 @@ end
 	if "$(-mam:N=static*)"
 		set noreadstate reread strictview
 		set readonly
+		if "$(PWD)/" == "$(INSTALLROOT)/*"
+			PACKAGEROOT = $(.MAMROOT.)/../..
+		else
+			PACKAGEROOT = $(.MAMROOT.)
+		end
 		INSTALLROOT = $(.MAMROOT.)
-		PACKAGEROOT = $(.MAMROOT.)/../..
 		set noreadonly
 		if "$(-mam:N=*,port*)"
 			if ! "$(-?prefix-include)"

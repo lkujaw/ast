@@ -369,7 +369,7 @@ exec - case $X in
 exec - 0) rm -f astmath.exe ;;
 exec - *) touch astmath.exe ;;
 exec - esac
-exec - rm -f astmath
+exec - rm -f astmath${mam_cc_SUFFIX_OBJECT}
 done astmath.exe dontcare generated
 prev FEATURE/aso
 exec - sed -e '/^#define _REQ_/!d' -e 's/#define _REQ_\([a-z0-9_]*\).*/ -l\1/' FEATURE/aso >> ast.req
