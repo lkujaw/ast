@@ -299,7 +299,7 @@ src/foo==foo : [recent] .SRC alias regular
 
 src/foo : [current] .SRC must=1 regular EXISTS
 
-()src/foo : [recent] .SRC event=[current] force compiled state
+()src/foo : [recent] .SRC event=[current] size=6 force compiled state
 '
 
 TEST 12 'target status'

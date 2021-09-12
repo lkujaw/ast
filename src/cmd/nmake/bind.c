@@ -28,6 +28,8 @@
 #include "make.h"
 #include "options.h"
 
+USE_ASSERT
+
 /*
  * embedded spaces in file name wreak havoc
  * we wreak hack to get through
@@ -234,7 +236,7 @@ unique(register Rule_t* r)
  */
 
 File_t*
-addfile(Dir_t* d, char* name, Time_t date)
+addfile(Dir_t* d, char* name, Time_t date, Sfoff_t size)
 {
 	register File_t*	f;
 	register File_t*	n;
@@ -267,12 +269,15 @@ addfile(Dir_t* d, char* name, Time_t date)
 		return n;
 	}
 #if DEBUG
-	message((-12, "%s: %s %s%s", d->name, name, timestr(date), d->ignorecase ? " [ignorecase]" : null));
+	message((-12, "%s: %s time=[%s] size=%I*d%s",
+		 d->name, name, timestr(date), sizeof(size), size,
+		 d->ignorecase ? " [ignorecase]" : null));
 #endif
 	f = newof(0, File_t, 1, 0);
 	f->next = n;
 	f->dir = d;
 	f->time = date;
+	f->size = size;
 	putfile(0, f);
 #if _WINIX
 	if (!d->archive && (s = strchr(name, '.')))
@@ -281,7 +286,7 @@ addfile(Dir_t* d, char* name, Time_t date)
 		if (streq(s, "exe") || streq(s, "EXE"))
 		{
 			*--s = 0;
-			addfile(d, name, date);
+			addfile(d, name, date, size);
 			*s = '.';
 		}
 	}
@@ -294,7 +299,7 @@ addfile(Dir_t* d, char* name, Time_t date)
  */
 
 void
-newfile(register Rule_t* r, char* dir, Time_t date)
+newfile(register Rule_t* r, char* dir, Time_t date, Sfoff_t size)
 {
 	register char*		s;
 	register char*		t;
@@ -328,7 +333,7 @@ newfile(register Rule_t* r, char* dir, Time_t date)
 					d = (Dir_t*)pos->bucket->value;
 					if (d->name == z->name)
 					{
-						addfile(d, s + 1, date);
+						addfile(d, s + 1, date, size);
 						break;
 					}
 				}
@@ -378,7 +383,7 @@ dirscan(Rule_t* r)
 				debug((-5, "scan directory %s", s));
 				while (entry = readdir(dirp))
 					if (!FIGNORE(entry->d_name))
-						addfile(d, entry->d_name, NOTIME);
+						addfile(d, entry->d_name, NOTIME, INVSIZE);
 				r->dynamic |= D_entries;
 				if (!(r->dynamic & D_bound) && !stat(s, &st))
 				{
@@ -670,8 +675,8 @@ bindalias(register Rule_t* r, register Rule_t* x, char* path, Rule_t* d, int for
 	}
 	if (!force && !((r->dynamic|x->dynamic)&D_bound) && !d && !strchr(x->name, '/'))
 	{
-		debug((-5, "%s alias %s delayed until one or the other is bound", x->name, r->name));
-		return x;
+		debug((-5, "%s (alias: %s) recursive bind", x->name, r->name));
+		x = bindfile(x, NiL, 0);
 	}
 	message((-2, "%s is also specified as %s", unbound(r), unbound(x)));
 #if DEBUG
@@ -919,6 +924,7 @@ bindfile(register Rule_t* r, char* name, int flags)
 		found = 0;
 		view = 0;
 		od = 0;
+		st.st_size = -1;
 
 		/*
 		 * at this point name!=r->name is possible
@@ -1081,6 +1087,7 @@ bindfile(register Rule_t* r, char* name, int flags)
 					{
 						r->dynamic |= D_member;
 						r->time = f->time;
+						rulesetsize(r, f->size);
 					}
 				}
 			if (!i && (ar = getar(r->active->parent->target->name)) && (i = ar->truncate) && strlen(base) > i)
@@ -1097,6 +1104,7 @@ bindfile(register Rule_t* r, char* name, int flags)
 						{
 							r->dynamic |= D_member;
 							r->time = f->time;
+							rulesetsize(r, f->size);
 						}
 					}
 				}
@@ -1421,12 +1429,13 @@ bindfile(register Rule_t* r, char* name, int flags)
 			view = 0;
 		b = sfstrseek(buf, 0, SEEK_SET);
 #if DEBUG
-		message((-11, "bindfile(%s): path=%s rule=%s alias=%s view=%d time=%s", name, b, r ? r->name : (char*)0, (x = getrule(b)) && x != r ? x->name : (char*)0, view, timestr(tm)));
+		message((-11, "bindfile(%s): path=%s rule=%s alias=%s view=%d time=[%s] size=%I*d", name, b, r ? r->name : (char*)0, (x = getrule(b)) && x != r ? x->name : (char*)0, view, timestr(tm), sizeof(st.st_size), st.st_size));
 #endif
 		if (!r)
 			r = makerule(name);
 		if (internal.openfile)
 			internal.openfile = r->name;
+		/* Ignore object files already found within an archive unless they are more recent. */
 		if (!(r->dynamic & D_member) || tm > r->time)
 		{
 			if (r->dynamic & D_member)
@@ -1435,6 +1444,7 @@ bindfile(register Rule_t* r, char* name, int flags)
 				r->dynamic |= D_membertoo;
 			}
 			r->time = tm;
+			rulesetsize(r, st.st_size);
 			if (!(r->dynamic & D_entries))
 			{
 				if (S_ISREG(st.st_mode) || !st.st_mode)
@@ -1632,7 +1642,7 @@ rebind(register Rule_t* r, register int op)
 			r->dynamic |= D_bound;
 		else
 		{
-			newfile(r, NiL, NOTIME);
+			newfile(r, NiL, NOTIME, INVSIZE);
 			if ((t = strchr(r->name, '/')) && (x = getrule(t + 1)) && (x = bindfile(x, NiL, 0)))
 				r = x;
 			else
@@ -1686,7 +1696,7 @@ unbind(const char* s, char* v, void* h)
 
 			if (!(r->property & P_state))
 			{
-				newfile(r, NiL, NOTIME);
+				newfile(r, NiL, NOTIME, INVSIZE);
 				if (r->uname)
 				{
 					oldname(r);

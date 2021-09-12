@@ -237,6 +237,48 @@ ar_uid_gid(Ardir_t* ar, char* b, long* p)
 }
 
 /*
+ * Mac OS X workaround: ar_size includes '\n' padding.
+ */
+
+static off_t
+ar_padding(Ardir_t * const ar, const off_t offHeader)
+{
+	off_t offPadding = 0;
+
+	/* Test whether subtracting the padding is necessary. */
+	if (offHeader == ar->dirent.offset + ar->dirent.size)
+	{
+		off_t offPosition = lseek(ar->fd, (off_t)0, SEEK_CUR);
+		char  chLast      = '\0';
+
+		for (lseek(ar->fd, offHeader - 1, SEEK_SET);
+		     read(ar->fd, &chLast,
+			  sizeof(chLast)) == sizeof(chLast) && chLast == '\n';
+		     lseek(ar->fd, (off_t)-2, SEEK_CUR))
+		{
+			++offPadding;
+
+			/* Platforms aligning in excess of 64-bits
+			 * have not been observed. */
+			if (offPadding > 7)
+			{
+				offPadding = 0;
+				break;
+			}
+		}
+
+		lseek(ar->fd, offPosition, SEEK_SET);
+
+		if (ar->dirent.size <= offPadding)
+		{
+			offPadding = 0;
+		}
+	}
+
+	return offPadding;
+}
+
+/*
  * nextf
  */
 
@@ -300,6 +342,7 @@ portnext(Ardir_t* ar)
 	state->offset += n + (n & 01);
 	if (ar->dirent.name[0] == '#' && ar->dirent.name[1] == '1' && ar->dirent.name[2] == TERM_port)
 	{
+		ar->dirent.size -= ar_padding(ar, state->offset);
 		n = strtol(ar->dirent.name + 3, NiL, 10);
 		ar->dirent.size -= n;
 		if ((n + 1) >= state->size)

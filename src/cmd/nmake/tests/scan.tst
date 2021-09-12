@@ -487,11 +487,11 @@ b : gen b.bbb'
 
 a.aaa : [current] must=1 compiled regular EXISTS
 
-()a.aaa : [recent] event=[current] force compiled state
+()a.aaa : [recent] event=[current] size=4 force compiled state
 
 b.bbb : [current] .SCAN.bbb must=1 compiled regular scanned EXISTS
 
-()b.bbb : [recent] .SCAN.bbb event=[current] compiled scanned state
+()b.bbb : [recent] .SCAN.bbb event=[current] size=4 compiled scanned state
  prerequisites: (BBB) 
 '
 
@@ -500,12 +500,12 @@ b.bbb : [current] .SCAN.bbb must=1 compiled regular scanned EXISTS
 
 a.aaa : [current] .SCAN.aaa compiled regular scanned EXISTS
 
-()a.aaa : [recent] .SCAN.aaa event=[current] compiled scanned state
+()a.aaa : [recent] .SCAN.aaa event=[current] size=4 compiled scanned state
  prerequisites: (AAA) 
 
 b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 
-()b.bbb : [recent] .SCAN.bbb event=[recent] compiled scanned state
+()b.bbb : [recent] .SCAN.bbb event=[recent] size=4 compiled scanned state
  prerequisites: (BBB) 
 '
 
@@ -513,11 +513,11 @@ b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 		ERROR - $'
 a.aaa : [recent] compiled regular EXISTS
 
-()a.aaa : [recent] event=[recent] compiled state
+()a.aaa : [recent] event=[recent] size=4 compiled state
 
 b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 
-()b.bbb : [recent] .SCAN.bbb event=[recent] compiled scanned state
+()b.bbb : [recent] .SCAN.bbb event=[recent] size=4 compiled scanned state
  prerequisites: (BBB) 
 '
 
@@ -528,12 +528,12 @@ b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 
 a.aaa : [current] .SCAN.aaa compiled regular scanned EXISTS
 
-()a.aaa : [recent] .SCAN.aaa event=[current] compiled scanned state
+()a.aaa : [recent] .SCAN.aaa event=[current] size=4 compiled scanned state
  prerequisites: (AAA) 
 
 b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 
-()b.bbb : [recent] .SCAN.bbb event=[recent] compiled scanned state
+()b.bbb : [recent] .SCAN.bbb event=[recent] size=4 compiled scanned state
  prerequisites: (BBB) 
 '
 
@@ -541,12 +541,12 @@ b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 		ERROR - $'
 a.aaa : [recent] .SCAN.aaa compiled regular scanned EXISTS
 
-()a.aaa : [recent] .SCAN.aaa event=[recent] compiled scanned state
+()a.aaa : [recent] .SCAN.aaa event=[recent] size=4 compiled scanned state
  prerequisites: (AAA) 
 
 b.bbb : [recent] .SCAN.bbb compiled regular scanned EXISTS
 
-()b.bbb : [recent] .SCAN.bbb event=[recent] compiled scanned state
+()b.bbb : [recent] .SCAN.bbb event=[recent] size=4 compiled scanned state
  prerequisites: (BBB) 
 '
 

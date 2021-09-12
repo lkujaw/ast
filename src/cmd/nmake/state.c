@@ -35,6 +35,8 @@
 #include "make.h"
 #include "options.h"
 
+USE_ASSERT
+
 /*
  * return a pointer to the rule <s1><s2><s3>
  * force causes the rule to be created
@@ -930,7 +932,7 @@ static int
 checkcurrent(register Rule_t* r, Stat_t* st)
 {
 	register int	n;
-	register char*	s;
+	register char*	s = NiL;
 	long		pos;
 
 	if (r->uname && !(n = rstat(r->uname, st, 1)))
@@ -962,7 +964,7 @@ checkcurrent(register Rule_t* r, Stat_t* st)
 	if (state.test & 0x00000100)
 		error(2, "statetime(%s): dir=%s n=%d time=[%s]", r->name, s, n, timestr(n ? NOTIME : tmxgetmtime(st)));
 #endif
-	newfile(r, s, n ? NOTIME : tmxgetmtime(st));
+	newfile(r, s, n ? NOTIME : tmxgetmtime(st), n ? 0 : st->st_size);
 	return n;
 }
 
@@ -975,16 +977,19 @@ checkcurrent(register Rule_t* r, Stat_t* st)
 Time_t
 statetime(register Rule_t* r, int sync)
 {
-	register Rule_t*	s;
+	register Rule_t*	s = NiL;
 	int			a;
 	int			n;
 	int			skip = 0;
 	int			zerostate = 0;
 	Time_t			t;
 	Time_t			q;
-	Rule_t*			x;
+	Rule_t*			x = NiL;
 	Stat_t			st;
 	Stat_t			ln;
+
+	(void)memset(&st, 0, sizeof(st));
+	st.st_size = -1;
 
 	if (r->property & P_state)
 	{
@@ -992,13 +997,12 @@ statetime(register Rule_t* r, int sync)
 			r->time = ((r->property & P_statevar) && r->status == FAILED) ? (Time_t)0 : CURTIME;
 		return r->time;
 	}
-	s = 0;
+
 	if (state.interrupt && r->status != EXISTS)
 		zerostate = 1;
 	else if (r->status == FAILED)
 	{
 		r->time = 0;
-		tmxsetmtime(&st, r->time);
 		if ((state.test & 0x00040000) && (s = staterule(RULE, r, NiL, 0)))
 		{
 			r->time = s->time;
@@ -1026,7 +1030,8 @@ statetime(register Rule_t* r, int sync)
 	}
 	else if (sync < 0)
 		return r->time;
-	else if ((s = staterule(RULE, r, NiL, 1)) && s->time == tmxgetmtime(&st))
+	else if ((s = staterule(RULE, r, NiL, 1))
+		 && s->time == tmxgetmtime(&st) && s->size == st.st_size)
 	{
 		if (state.exec && !state.touch)
 		{
@@ -1164,6 +1169,7 @@ statetime(register Rule_t* r, int sync)
 	{
 		s->dynamic &= ~D_lowres;
 		s->time = zerostate ? 0 : (r->property & P_virtual) ? r->time : tmxgetmtime(&st);
+		rulesetsize(s, zerostate ? INVSIZE : (r->property & P_virtual) ? r->size : st.st_size);
 		s->event = CURTIME;
 		state.savestate = 1;
 	}

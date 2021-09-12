@@ -1522,7 +1522,7 @@ scanexec(int fd, Rule_t* r, Scan_t* ss, List_t* p)
 						date = tmxsns(date, 0);
 					else
 						date = tmxdate((char*)b + arg[1].begin, NiL, TMX_NOW);
-					addfile(state.archive, (char*)b + arg[0].begin, date);
+					addfile(state.archive, (char*)b + arg[0].begin, date, INVSIZE);
 				}
 				else
 					error(2, "%s: `A' scan pattern for non-%s", r->name, internal.archive->name);

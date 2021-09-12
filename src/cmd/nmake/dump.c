@@ -132,7 +132,11 @@ listrule(const char* s, char* v, void* h)
 			if (r->property & P_staterule)
 			{
 				if (!isaltstate(r->name))
-					sfprintf(sp, "event=[%s] ", timestr(r->event));
+				{
+					sfprintf(sp, "event=[%s] size=%I*d ",
+						 timestr(r->event),
+						 sizeof(r->size), r->size);
+				}
 			}
 			else if (r->property & P_statevar)
 				sfputr(sp, "statevar", ' ');

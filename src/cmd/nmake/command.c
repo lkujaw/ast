@@ -1642,7 +1642,7 @@ trigger(register Rule_t* r, Rule_t* a, char* action, Flags_t flags)
 					tmp = sfstropen();
 					edit(tmp, r->name, KEEP, DELETE, DELETE);
 					if (*(t = sfstruse(tmp)))
-						newfile(r, t, r->time);
+						newfile(r, t, r->time, r->size);
 					sfstrclose(tmp);
 				}
 			}

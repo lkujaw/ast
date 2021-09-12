@@ -172,6 +172,8 @@
 #define CURTIME	TMX_NOW		/* high resolution current time		*/
 #define CURSECS	((Seconds_t)time(NiL)) /* seconds resolution time	*/
 
+#define INVSIZE ((Sfoff_t)-1)
+
 /*
  * VAR and RULE must not change -- the rest must be in sequence
  */
@@ -463,6 +465,7 @@ struct File_s				/* file table entry		*/
 	File_t*		next;		/* next in list			*/
 	Dir_t*		dir;		/* directory containing file	*/
 	Time_t		time;		/* modify time			*/
+	Sfoff_t         size;           /* file size                    */
 };
 
 struct Frame_s				/* active target frame		*/
@@ -509,6 +512,7 @@ struct Rule_s				/* rule				*/
 	List_t*		prereqs;	/* prerequisites		*/
 	char*		action;		/* update action		*/
 	Time_t		time;		/* modify time			*/
+	Sfoff_t		size;		/* file size			*/
 
 	Flags_t		attribute;	/* external named attributes	*/
 	Flags_t		dynamic;	/* dynamic properties		*/
@@ -933,7 +937,7 @@ extern char*		version;	/* program version stamp	*/
  * make routines
  */
 
-extern File_t*		addfile(Dir_t*, char*, Time_t);
+extern File_t*		addfile(Dir_t*, char*, Time_t, Sfoff_t);
 extern void		addprereq(Rule_t*, Rule_t*, int);
 extern List_t*		append(List_t*, List_t*);
 extern int		apply(Rule_t*, char*, char*, char*, Flags_t);
@@ -1020,7 +1024,7 @@ extern int		metamatch(char*, char*, char*);
 extern Rule_t*		metarule(char*, char*, int);
 extern void		negate(Rule_t*, Rule_t*);
 extern void*		newchunk(char**, size_t);
-extern void		newfile(Rule_t*, char*, Time_t);
+extern void		newfile(Rule_t*, char*, Time_t, Sfoff_t);
 extern char*		objectfile(void);
 extern void		parentage(Sfio_t*, Rule_t*, char*);
 extern int		parse(Sfio_t*, char*, char*, Sfio_t*);
@@ -1040,6 +1044,8 @@ extern void		remdup(List_t*);
 extern void		remtmp(int);
 extern int		resolve(char*, int, int);
 extern int		rstat(char*, Stat_t*, int);
+extern Bool_t           ruleischanged(const Rule_t *pRuleQuery, const Rule_t *pRulePrior);
+extern void             rulesetsize(Rule_t *pRuleSet, Sfoff_t offNewSize);
 extern void		rules(char*);
 extern Rule_t*		rulestate(Rule_t*, int);
 extern void		savestate(void);
@@ -1065,3 +1071,23 @@ extern Dir_t*		unique(Rule_t*);
 extern void		unparse(int);
 extern Var_t*		varstate(Rule_t*, int);
 extern void		wakeup(Seconds_t, List_t*);
+
+#define rulesetsize(r,s) \
+	do \
+	{ \
+		const Sfoff_t _ast_value = (s); \
+		if (_ast_value != INVSIZE && _ast_value < 0) \
+		{ \
+			error(ERROR_PANIC|ERROR_SOURCE, _g_szSrcFile, __LINE__, \
+				"rulesetsize: invalid size %I*d", \
+				sizeof(_ast_value), _ast_value); \
+		} \
+		else if ((r) != NiL && (r)->name != NiL) \
+		{ \
+			message((-14, "rulesetsize(%s): [%s:%d] set size to %I*d (was %I*d)", \
+				(r)->name, _g_szSrcFile, __LINE__, \
+				sizeof(_ast_value), _ast_value, \
+				sizeof((r)->size), (r)->size)); \
+		} \
+		rulesetsize((r),_ast_value); \
+	} while (0)

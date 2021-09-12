@@ -87,6 +87,7 @@
  *	1 # time	rule time
  *	1 # nsec	rule nsec [2004-12-01]
  *	1 # eventnsec	event nsec [2004-12-01]
+ *      1 # size        file size [2021-09-05]
  *	* # ...		[rule number field additions here]
  *	1 $ name	name string
  *	1 $ action	action string
@@ -115,6 +116,8 @@
 
 #include <ccode.h>
 
+USE_ASSERT
+
 /*
  * old rule load() replacement puns on struct rule
  *
@@ -139,7 +142,7 @@
 #define MINVARNUM	1		/* min # variable number fields	*/
 #define MINVARSTR	2		/* min # variable string fields	*/
 
-#define RULENUM		(MINRULENUM+2)	/* # rule number fields		*/
+#define RULENUM		(MINRULENUM+3)	/* # rule number fields		*/
 #define RULESTR		(MINRULESTR+0)	/* # rule string fields		*/
 #define VARNUM		(MINVARNUM+0)	/* # variable number fields	*/
 #define VARSTR		(MINVARSTR+0)	/* # variable string fields	*/
@@ -603,6 +606,7 @@ comprule(const char* s, char* v, void* h)
 
 	sfputu(cs->fp, tmxnsec(r->time));
 	sfputu(cs->fp, (r->property & P_staterule) ? tmxnsec(r->event) : 0);
+	sfputl(cs->fp, (r->property & P_staterule) ? r->size : INVSIZE);
 
 	compstring(cs, r->name);
 	compstring(cs, r->action);
@@ -1849,6 +1853,8 @@ load(register Sfio_t* sp, const char* objfile, int source, int ucheck)
 				r->prereqs = d + n - 1;
 			ts = sfgetu(sp);
 
+			/* Begin loading rule number field extensions. */
+
 			/*
 			 * 2004-12-01
 			 */
@@ -1875,9 +1881,24 @@ load(register Sfio_t* sp, const char* objfile, int source, int ucheck)
 				tn = 0;
 
 			/*
-			 * rule number field additions here
+			 * 2021-09-05
 			 */
 
+			if (n && (r->property & P_staterule))
+			{
+				--n;
+				rulesetsize(r, sfgetl(sp));
+			}
+			else
+			{
+				rulesetsize(r, INVSIZE);
+			}
+
+			/*
+			 * Write new rule number field additions here.
+			 */
+
+			/* Discard unknown rule number fields. */
 			while (n--)
 				sfgetu(sp);
 			r->name = loadstring(&ls, sp);
@@ -2061,6 +2082,7 @@ load(register Sfio_t* sp, const char* objfile, int source, int ucheck)
 					{
 						r->statedata = o->statedata;
 						r->time = o->time;
+						rulesetsize(r, o->size);
 						r->status = o->status;
 						r->view = o->view;
 						r->property &= ~(P_parameter|P_state|P_staterule|P_statevar);

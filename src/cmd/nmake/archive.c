@@ -29,6 +29,8 @@
 
 #include <ardir.h>
 
+USE_ASSERT
+
 static int		ntouched;	/* count of touched members	*/
 
 /*
@@ -78,14 +80,27 @@ walkar(register Ardir_t* ar, Dir_t* d, char* name)
 		{
 			if ((Seconds_t)ent->mtime > (Seconds_t)ar->st.st_mtime)
 				message((-1, "member %s is newer than archive %s", ent->name, name));
-			addfile(d, ent->name, ((r = staterule(RULE, NiL, ent->name, -1)) && ent->mtime == tmxsec(r->time)) ? r->time : tmxsns(ent->mtime, 0));
+			r = staterule(RULE, NiL, ent->name, -1);
+			if (r && (tmxsec(r->time) == ent->mtime && r->size == ent->size))
+			{
+				addfile(d, ent->name, r->time, r->size);
+			}
+			else
+			{
+				addfile(d, ent->name, tmxsns(ent->mtime, 0), ent->size);
+			}
 		}
 		else if ((r = getrule(ent->name)) && r->status == TOUCH)
 		{
+			Rule_t * s;
+
 			ent->mtime = CURSECS;
 			ardirchange(ar, ent);
 			r->status = EXISTS;
-			staterule(RULE, r, NiL, 1)->time = r->time = tmxsns(ent->mtime, 0);
+			s = staterule(RULE, r, NiL, 1);
+			s->time = r->time = tmxsns(ent->mtime, 0);
+			rulesetsize(r, ent->size);
+			rulesetsize(s, r->size);
 			state.savestate = 1;
 			if (!state.silent)
 				error(0, "touch %s/%s", name, ent->name);

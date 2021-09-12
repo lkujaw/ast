@@ -30,6 +30,8 @@
 #include "make.h"
 #include "options.h"
 
+USE_ASSERT
+
 #define ANON(name,flags)	(void)rinternal(name,P_attribute|(flags))
 #define ASOC(field,name,flags)	internal.field=rassociate(name,flags)
 #define ATTR(field,name,flags)	internal.field=rinternal(name,P_attribute|(flags))
@@ -234,30 +236,42 @@ makerule(register char* name)
 		}
 	}
 	newrule(r);
-	r->name = putrule(0, r);
-	if (state.compnew)
-		(*state.compnew)(r->name, (char*)r, state.comparg);
-	if (!name)
-		n = nametype(r->name, NiL);
-	if (n & (NAME_staterule|NAME_altstate))
+	ASSERT(r != NiL)
 	{
-		r->dynamic |= D_compiled;
-		r->property |= P_state|P_staterule;
-	}
-	else if (n & NAME_statevar)
-	{
-		r->dynamic |= D_compiled;
-		r->property |= P_state|P_statevar;
-	}
-	else if (state.init || state.readonly)
-		r->dynamic |= D_compiled;
-	else
-		r->dynamic &= ~D_compiled;
-	r->status = NOTYET;
-	r->preview = state.maxview + 1;
+		r->name = putrule(0, r);
+		if (state.compnew)
+		{
+			(*state.compnew)(r->name, (char*)r, state.comparg);
+		}
+		if (!name)
+		{
+			n = nametype(r->name, NiL);
+		}
+		rulesetsize(r, INVSIZE);
+		if (n & (NAME_staterule|NAME_altstate))
+		{
+			r->dynamic |= D_compiled;
+			r->property |= P_state|P_staterule;
+		}
+		else if (n & NAME_statevar)
+		{
+			r->dynamic |= D_compiled;
+			r->property |= P_state|P_statevar;
+		}
+		else if (state.init || state.readonly)
+		{
+			r->dynamic |= D_compiled;
+		}
+		else
+		{
+			r->dynamic &= ~D_compiled;
+		}
+		r->status = NOTYET;
+		r->preview = state.maxview + 1;
 #if DEBUG
-	message((-13, "adding %s %s", (r->property & P_state) ? "state variable" : "atom", r->name));
+		message((-13, "adding %s %s", (r->property & P_state) ? "state variable" : "atom", r->name));
 #endif
+	}
 	return r;
 }
 
@@ -1143,7 +1157,7 @@ mergestate(Rule_t* from, Rule_t* to)
 		error(2, "MERGESTATE   to: %s: %s time=[%s] event=[%s]", to->name, tostate->name, timestr(tostate->time), timestr(tostate->event));
 	}
 #endif
-	if ((from->dynamic & D_alias) && fromstate->time && !statetimeq(fromstate, tostate))
+	if ((from->dynamic & D_alias) && fromstate->time && ruleischanged(fromstate, tostate))
 	{
 		/*
 		 * the solution is conservative but ok
@@ -1601,6 +1615,7 @@ initrule(void)
 		internal.empty->dynamic |= D_bound;
 		internal.empty->status = IGNORE;
 		internal.empty->time = OLDTIME;
+		rulesetsize(internal.empty, INVSIZE);
 		internal.scan->scan = SCAN_USER;
 		internal.serialize->action = null;
 		addprereq(internal.source, internal.dot, PREREQ_APPEND);
@@ -1861,4 +1876,33 @@ initview(void)
 	if (!state.maxview)
 		state.believe = 0;
 	sfstrclose(tmp);
+}
+
+/* Returns TRUE if RuleQuery has changed compared to RulePrior. */
+Bool_t
+ruleischanged(const Rule_t * const pRuleQuery,
+	      const Rule_t * const pRulePrior)
+{
+	Bool_t fResult = TRUE;
+
+	ASSERT(NiL != pRuleQuery && NiL != pRulePrior &&
+	       pRuleQuery != pRulePrior)
+	{
+		if (statetimeq(pRuleQuery, pRulePrior) &&
+		    (pRuleQuery->size == pRulePrior->size))
+		{
+			fResult = FALSE;
+		}
+	}
+	return fResult;
+}
+
+#undef rulesetsize
+void
+rulesetsize(Rule_t *pRuleSet, Sfoff_t offNewSize)
+{
+	ASSERT(pRuleSet != NiL && (offNewSize == INVSIZE || offNewSize >= 0))
+	{
+		pRuleSet->size = offNewSize;
+	}
 }

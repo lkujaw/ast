@@ -27,6 +27,8 @@
 
 #include "make.h"
 
+USE_ASSERT
+
 #define PREVIEW(r,x)	do{if(r->preview>x->preview&&(r->scan&&r->scan==x->scan||!r->scan&&!((r->property|x->property)&P_virtual)))r->preview=x->preview;}while(0)
 
 /*
@@ -638,7 +640,7 @@ make(register Rule_t* r, Time_t* ttarget, char* arg, Flags_t flags)
 				r->dynamic |= D_intermediate;
 				r->must++;
 			}
-			else if (!statetimeq(r, r0) || !r0->event || (r->dynamic & D_aliaschanged))
+			else if (ruleischanged(r, r0) || !r0->event || (r->dynamic & D_aliaschanged))
 			{
 				if (!(r->property & P_accept) && !state.accept)
 				{
@@ -649,7 +651,9 @@ make(register Rule_t* r, Time_t* ttarget, char* arg, Flags_t flags)
 						if (r->time && r->time < r0->time && (r->dynamic & D_regular))
 							error(1, "%s has been replaced by an older version", unbound(r));
 						if (r0->event && r0->time)
-							reason((1, "%s [%s] has changed [%s]", r->name, timestr(r->time), timestr(r0->time)));
+							reason((1, "%s (time=[%s] size=%I*d) has changed (time=[%s] size=%I*d)",
+								r->name, timestr(r->time), sizeof(r->size), r->size,
+									 timestr(r0->time), sizeof(r0->size), r0->size));
 						else if (r0->event && r->view)
 							reason((1, "%s [%s] has changed in view %s", r->name, timestr(r->time), state.view[r->view].path));
 						else
@@ -680,6 +684,7 @@ make(register Rule_t* r, Time_t* ttarget, char* arg, Flags_t flags)
 				else
 				{
 					r0->time = r->time;
+					rulesetsize(r0, r->size);
 					r0->property |= P_force;
 				}
 			}

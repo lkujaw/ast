@@ -20,21 +20,21 @@ all : .MAKE .FORCE .REPEAT
 
 foo.c : [current] .SCAN.c must=1 regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[current] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[current] size=17 compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
 
 hdr/foo.h==foo.h : [current] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c must=1 terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [current] must=1 regular EXISTS
 
-()bar.G : [recent] event=[current] force compiled state
+()bar.G : [recent] event=[current] size=17 force compiled state
 
 bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 
-()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] implicit built compiled state
+()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
@@ -44,21 +44,21 @@ bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 		ERROR - $'
 foo.c : [recent] .SCAN.c regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[recent] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[recent] size=17 compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
 
 hdr/foo.h==foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [recent] regular EXISTS
 
-()bar.G : [recent] event=[recent] force compiled state
+()bar.G : [recent] event=[recent] size=17 force compiled state
 
 bar.h : [recent] .LCL.INCLUDE .SCAN.c regular scanned EXISTS
 
-()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] implicit built compiled state
+()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
@@ -84,21 +84,21 @@ all : .MAKE .FORCE .REPEAT
 
 foo.c : [current] .SCAN.c must=1 regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[current] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[current] size=17 compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
 
 hdr/foo.h==foo.h : [current] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c must=1 terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [current] must=1 regular EXISTS
 
-()bar.G : [recent] event=[current] force compiled state
+()bar.G : [recent] event=[current] size=17 force compiled state
 
 bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 
-()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] implicit built compiled state
+()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
@@ -108,21 +108,21 @@ bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 		ERROR - $'
 foo.c : [recent] .SCAN.c regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[recent] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[recent] size=17 compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
 
 hdr/foo.h==foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [recent] regular EXISTS
 
-()bar.G : [recent] event=[recent] force compiled state
+()bar.G : [recent] event=[recent] size=17 force compiled state
 
 bar.h : [recent] .LCL.INCLUDE .SCAN.c regular scanned EXISTS
 
-()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] implicit built compiled state
+()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: hdr/foo.h==foo.h 
@@ -148,21 +148,21 @@ all : .MAKE .FORCE .REPEAT
 
 foo.c : [current] .SCAN.c must=1 regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[current] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[current] size=17 compiled scanned state
  prerequisites: foo.h 
 
 foo.h : [current] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c must=1 terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [current] must=1 regular EXISTS
 
-()bar.G : [recent] event=[current] force compiled state
+()bar.G : [recent] event=[current] size=17 force compiled state
 
 bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 
-()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] implicit built compiled state
+()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: foo.h 
@@ -172,21 +172,21 @@ bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 		ERROR - $'
 foo.c : [recent] .SCAN.c regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[recent] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[recent] size=17 compiled scanned state
  prerequisites: foo.h 
 
 foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [recent] regular EXISTS
 
-()bar.G : [recent] event=[recent] force compiled state
+()bar.G : [recent] event=[recent] size=17 force compiled state
 
 bar.h : [recent] .LCL.INCLUDE .SCAN.c regular scanned EXISTS
 
-()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] implicit built compiled state
+()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: foo.h 
@@ -212,21 +212,21 @@ all : .MAKE .FORCE .REPEAT
 
 foo.c : [current] .SCAN.c must=1 regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[current] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[current] size=17 compiled scanned state
  prerequisites: foo.h 
 
 foo.h : [current] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c must=1 terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [current] must=1 regular EXISTS
 
-()bar.G : [recent] event=[current] force compiled state
+()bar.G : [recent] event=[current] size=17 force compiled state
 
 bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 
-()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] implicit built compiled state
+()bar.h : [current] .LCL.INCLUDE .SCAN.c event=[current] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: foo.h 
@@ -236,21 +236,21 @@ bar.h : [current] .LCL.INCLUDE .SCAN.c must=4 regular scanned triggered EXISTS
 		ERROR - $'
 foo.c : [recent] .SCAN.c regular scanned EXISTS
 
-()foo.c : [recent] .SCAN.c event=[recent] compiled scanned state
+()foo.c : [recent] .SCAN.c event=[recent] size=17 compiled scanned state
  prerequisites: foo.h 
 
 foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c terminal regular scanned EXISTS
 
-()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] implicit compiled scanned state
+()foo.h : [recent] .LCL.INCLUDE .PFX.INCLUDE .SCAN.c event=[recent] size=17 implicit compiled scanned state
  prerequisites: bar.h 
 
 uhdr/bar.G==bar.G : [recent] regular EXISTS
 
-()bar.G : [recent] event=[recent] force compiled state
+()bar.G : [recent] event=[recent] size=17 force compiled state
 
 bar.h : [recent] .LCL.INCLUDE .SCAN.c regular scanned EXISTS
 
-()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] implicit built compiled state
+()bar.h : [recent] .LCL.INCLUDE .SCAN.c event=[recent] size=17 implicit built compiled state
 
 (+)bar.h : cancel=[not found] .SCAN.c implicit compiled scanned state
  prerequisites: foo.h 

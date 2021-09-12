@@ -95,6 +95,20 @@ struct _sfio_s;
 #endif
 #endif
 
+#ifdef FALSE
+#undef FALSE
+#endif
+#define FALSE (Bool_t)0
+#ifdef TRUE
+#undef TRUE
+#endif
+#define TRUE (Bool_t)1
+#ifdef Bool_t
+#undef Bool_t
+#endif
+/*lint -strong(AJXB,Bool_t)*/
+typedef unsigned char Bool_t;
+
 /* locale stuff */
 
 #if !_hdr_locale
