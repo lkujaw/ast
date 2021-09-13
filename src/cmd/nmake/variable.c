@@ -1,4 +1,4 @@
-/***********************************************************************
+/************************************************************************
  *                                                                      *
  *               This software is part of the ast package               *
  *          Copyright (c) 1984-2012 AT&T Intellectual Property          *
@@ -27,6 +27,8 @@
 
 #include "make.h"
 #include "options.h"
+
+USE_ASSERT
 
 #define BINDING(r, f)                 \
     (((f)&VAL_UNBOUND) ? unbound(r)   \
@@ -96,15 +98,14 @@ scanprereqs(register Sfio_t * sp,
                 }
                 else if (sp
                          && (all
-                             || ((x->property & P_state) || x->scan
-                                 || (y = staterule(PREREQS, x, NiL, 0))
-                                        && y->scan
-                                 || !r->scan)
-                                    && !(x->property & (P_use | P_virtual))
-                                    && (!(x->property & P_ignore)
-                                        || (x->property & P_parameter))
-                                    && (!(x->property & P_dontcare)
-                                        || x->time)))
+                             || (((x->property & P_state) || x->scan
+                                  || ((y = staterule(PREREQS, x, NiL, 0))
+                                      && y->scan)
+                                  || !r->scan)
+                                 && !(x->property & (P_use | P_virtual))
+                                 && (!(x->property & P_ignore)
+                                     || (x->property & P_parameter))
+                                 && (!(x->property & P_dontcare) || x->time))))
                 {
                     x->mark |= M_generate;
                     if (all || ((x->property & P_state) != 0) == dostate)
@@ -125,7 +126,7 @@ scanprereqs(register Sfio_t * sp,
                         sep = scanprereqs(sp, x, dostate, all, 0, sep, op);
                 }
             }
-            while (x = z);
+            while ((x = z));
         }
     return sep;
 }
@@ -218,7 +219,7 @@ getval(register char * s, int op)
                  * -[^:alnum:]	defined by genop()/listops()
                  */
 
-                if (c = *++s)
+                if ((c = *++s))
                 {
                     if (isalnum(c))
                         c = 0;
@@ -232,9 +233,11 @@ getval(register char * s, int op)
                 }
                 if (state.mam.statix
                     && (state.never
-                        || state.frame->target
-                               && !(state.frame->target->property & P_always)))
-                    return "${NMAKEFLAGS}";
+                        || (state.frame->target
+                            && !(state.frame->target->property & P_always))))
+                {
+                    return ("${NMAKEFLAGS}");
+                }
                 listops(internal.val, c);
                 if (c == '-')
                     for (p = internal.preprocess->prereqs; p; p = p->next)
@@ -252,7 +255,7 @@ getval(register char * s, int op)
                         shquote(internal.val, state.argv[n]);
                     }
                 for (p = internal.script->prereqs; p; p = p->next)
-                    if (v = getvar(p->rule->name))
+                    if ((v = getvar(p->rule->name)))
                     {
                         if (sep)
                             sfputc(internal.val, ' ');
@@ -291,7 +294,7 @@ getval(register char * s, int op)
             }
             else
             {
-                if (next = strchr(s, ' '))
+                if ((next = strchr(s, ' ')))
                 {
                     *next = 0;
                     if (!tokens++)
@@ -392,39 +395,31 @@ getval(register char * s, int op)
                     for (p = r->prereqs; p; p = p->next)
                     {
                         if (p->rule != x
-                            && (c == '~'
-                                    && (!(op & VAL_FILE) || !notfile(p->rule)
-                                        || (op & VAL_BRACE)
-                                               && (*p->rule->name == '{'
-                                                   || *p->rule->name == '}')
-                                               && !*(p->rule->name + 1))
-                                || !notfile(p->rule)
-                                       && (c != '>'
-                                           || !(p->rule->dynamic & D_same)
-                                                  && (!(r->property & P_archive)
-                                                          && (p->rule->time
-                                                                  >= state.start
-                                                              || p->rule->time
-                                                                     > e
-                                                              || !(z
-                                                                   = staterule(
-                                                                       RULE,
-                                                                       p->rule,
-                                                                       NiL,
-                                                                       -1))
-                                                              || !z->time
-                                                              || !(state
-                                                                       .questionable
-                                                                   & 0x01000000)
-                                                                     && z->time
-                                                                            > e)
-                                                      || (r->property
-                                                          & P_archive)
-                                                             && !(p->rule
-                                                                      ->dynamic
-                                                                  & D_member)
-                                                             && p->rule
-                                                                    ->time))))
+                            && ((c == '~'
+                                 && (!(op & VAL_FILE) || !notfile(p->rule)
+                                     || ((op & VAL_BRACE)
+                                         && (*p->rule->name == '{'
+                                             || *p->rule->name == '}')
+                                         && !*(p->rule->name + 1))))
+                                || (!notfile(p->rule)
+                                    && (c != '>'
+                                        || (!(p->rule->dynamic & D_same)
+                                            && ((!(r->property & P_archive)
+                                                 && (p->rule->time
+                                                         >= state.start
+                                                     || p->rule->time > e
+                                                     || !(z = staterule(RULE,
+                                                                        p->rule,
+                                                                        NiL,
+                                                                        -1))
+                                                     || !z->time
+                                                     || (!(state.questionable
+                                                           & 0x01000000)
+                                                         && z->time > e)))
+                                                || ((r->property & P_archive)
+                                                    && !(p->rule->dynamic
+                                                         & D_member)
+                                                    && p->rule->time)))))))
                         {
                             t = BINDING(p->rule, op);
                             if (n)
@@ -536,8 +531,10 @@ getval(register char * s, int op)
         {
             t = 0;
             if (!(v->property & V_functional)
-                || (r = getrule(v->name)) && !(r->property & P_functional))
+                || ((r = getrule(v->name)) && !(r->property & P_functional)))
+            {
                 r = 0;
+            }
         }
         else
         {
@@ -555,10 +552,14 @@ getval(register char * s, int op)
                     *t++ = ' ';
                     return null;
                 }
-                if (v = getvar(r->name))
+                if ((v = getvar(r->name)))
+                {
                     v->property |= V_functional;
+                }
                 else
+                {
                     v = setvar(r->name, NiL, V_functional);
+                }
             }
             *t++ = ' ';
         }
@@ -600,7 +601,7 @@ getval(register char * s, int op)
                 }
             }
             *ap = 0;
-            return (t = (*v->builtin)(arg)) ? t : null;
+            return ((t = (*v->builtin)(arg)) ? t : null);
         }
         if (r)
             maketop(r, 0, t ? t : null);
@@ -634,40 +635,50 @@ getval(register char * s, int op)
 }
 
 /*
- * reset variable p value to v
- * append!=0 if v is from append
+ * reset variable Var.value to Value
+ * append!=0 if Value is from append
  */
 
 static void
-resetvar(register Var_t * p, char * v, int append)
+resetvar(register Var_t * pVar, char * const pszValue, int fAppend)
 {
-    const int nLengthOfV = strlen(v);
-
-    if (!p->value || (p->property & V_import) || nLengthOfV > p->length)
+    ASSERT(pszValue != NiL)
     {
-        int nNewLengthOfP = nLengthOfV;
+        const int cchValue = strlen(pszValue);
 
-        if (append)
+        ASSERT(pVar != NiL)
         {
-            /* Round up to nearest 1KiB. */
-            nNewLengthOfP = (nNewLengthOfP + 1023) & ~1023;
+            if (pVar->value == NiL || pVar->length < cchValue
+                || (pVar->property & V_import))
+            {
+                int cchNewVarValue = cchValue;
+
+                if (fAppend)
+                {
+                    /* Round up to the nearest 1KiB. */
+                    cchNewVarValue = (cchNewVarValue + 1023) & ~1023;
+                }
+                if (cchNewVarValue < MINVALUE)
+                {
+                    cchNewVarValue = MINVALUE;
+                }
+                if (!(pVar->property & V_free))
+                {
+                    pVar->property |= V_free;
+                    pVar->value = NiL;
+                }
+                /* cchNewVarValue+1 for NUL terminator. */
+                pVar->value  = newof(pVar->value, char, cchNewVarValue + 1, 0);
+                pVar->length = cchNewVarValue;
+            }
+            ASSERT(pVar->value != NiL && pVar->length >= cchValue)
+            {
+                /* pVar->value and szValue may overlap.
+                 * cchValue+1 for NUL terminator. */
+                memmove(pVar->value, pszValue, cchValue + 1);
+            }
         }
-        if (nNewLengthOfP < MINVALUE)
-        {
-            nNewLengthOfP = MINVALUE;
-        }
-        if (!(p->property & V_free))
-        {
-            p->property |= V_free;
-            p->value = 0;
-        }
-        /* Add one to nNewLengthOfP for null terminator. */
-        p->value  = newof(p->value, char, nNewLengthOfP + 1, 0);
-        p->length = nNewLengthOfP;
     }
-    /* p->value and v may overlap, therefore strcpy() cannot be used. */
-    /* Add one to nLengthOfV for null terminator. */
-    memmove(p->value, v, nLengthOfV + 1);
 }
 
 /*
@@ -709,7 +720,7 @@ setvar(char * s, char * v, int flags)
      * check for a previous definition
      */
 
-    if (undefined = !(p = getvar(s)))
+    if ((undefined = !(p = getvar(s))))
     {
         newvar(p);
         if (p->property & V_import)
@@ -739,10 +750,10 @@ setvar(char * s, char * v, int flags)
     }
     p->property |= flags & (V_builtin | V_functional);
     if (state.user || state.readonly || undefined
-        || !(p->property & V_readonly)
-               && (!state.pushed && !(p->property & V_import)
-                   || state.global != 1 || (flags & V_import)
-                   || state.base && !state.init))
+        || (!(p->property & V_readonly)
+            && ((!state.pushed && !(p->property & V_import))
+                || state.global != 1 || (flags & V_import)
+                || (state.base && !state.init))))
     {
         if (flags & V_import)
         {
@@ -757,8 +768,10 @@ setvar(char * s, char * v, int flags)
         {
             t = v;
             if (state.user)
+            {
                 p->property &= ~V_append;
-            if (n = (flags & V_append))
+            }
+            if ((n = (flags & V_append)))
             {
                 if (state.reading && !state.global && isid)
                     p->property |= V_frozen;
@@ -878,8 +891,10 @@ colonlist(register Sfio_t * sp, register char * s, int exp, register int del)
         switch (*p++)
         {
             case ':':
-                if (*(p - 1) = del)
+                if ((*(p - 1) = del))
+                {
                     break;
+                }
                 /*FALLTHROUGH*/
             case 0:
                 return s;
@@ -920,7 +935,7 @@ localvar(Sfio_t * sp, register Var_t * v, char * value, int property)
                  * this quoting allows simple parameterization
                  */
 
-                while (c = *s++)
+                while ((c = *s++))
                 {
                     switch (c)
                     {
@@ -970,7 +985,7 @@ readenv(void)
     register char ** e;
     register char *  t;
 
-    for (e = environ; t = *e; e++)
+    for (e = environ; (t = *e); e++)
     {
         if (istype(*t, C_ID1))
         {
@@ -984,7 +999,7 @@ readenv(void)
             }
             else
             {
-                sfstrseek(internal.nam, 0, SEEK_SET);
+                (void)sfstrseek(internal.nam, 0, SEEK_SET);
             }
         }
     }

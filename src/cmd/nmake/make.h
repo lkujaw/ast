@@ -50,6 +50,15 @@
 #define	PANIC		ERROR_PANIC
 #endif
 
+#ifdef USE_ASSERT
+#undef USE_ASSERT
+#endif
+#define USE_ASSERT	static const char _g_szSrcFile[]=__FILE__;
+#ifdef ASSERT
+#undef ASSERT
+#endif
+#define ASSERT(x)	if(!(x)){error(ERROR_PANIC|ERROR_SOURCE,_g_szSrcFile,__LINE__);}else
+
 #define COMMENT		'#'		/* make comment char		*/
 #define MARK_CONTEXT	'\002'		/* context mark -- not in input!*/
 #define MARK_QUOTE	'\003'		/* quote mark -- not in input!	*/
@@ -90,7 +99,7 @@
 #define getrule(name)	((Rule_t*)hashget(table.rule,(name)))
 #define getvar(name)	((Var_t*)hashget(table.var,(name)))
 #define message(x)	do if (error_info.trace < 0) { error x; } while (0)
-#define notfile(r)	(((r)->property&(P_attribute|P_functional|P_make|P_operator|P_state|P_use|P_virtual))||((r)->dynamic&D_scope)||(r)->semaphore||((r)->property&P_dontcare)&&((r)->dynamic&D_bound)&&!(r)->time)
+#define notfile(r)	(((r)->property&(P_attribute|P_functional|P_make|P_operator|P_state|P_use|P_virtual))||((r)->dynamic&D_scope)||(r)->semaphore||(((r)->property&P_dontcare)&&((r)->dynamic&D_bound)&&!(r)->time))
 #define oldname(r)	do{if(getbound(r->uname))putbound(0,0);if(r->dynamic&D_alias)r->dynamic&=~D_alias;else putrule(r->name,0);r->name=r->uname;r->uname=0;}while(0)
 #define putbound(n,d)	hashput(table.bound,(char*)(n),(char*)(d))
 #define putar(name,d)	hashput(table.ar,(name),(char*)(d))
@@ -130,7 +139,7 @@
 
 #define newlist(x)	do{if(x=(List_t*)internal.freelists){if(x->next){x=x->next;*((char**)internal.freelists)=(char*)x->next;}else internal.freelists=(char*)x->rule;}else x=(List_t*)newchunk(&internal.freelists,sizeof(List_t));}while(0)
 #define newrule(r)	do{if(r=(Rule_t*)internal.freerules){internal.freerules=(*((char**)r));zero(*r);}else r=(Rule_t*)newchunk(&internal.freerules,sizeof(Rule_t));}while(0)
-#define newvar(v)	do{if(v=(Var_t*)internal.freevars){internal.freevars=(*((char**)v));}else v=(Var_t*)newchunk(&internal.freevars,sizeof(Var_t));}while(0)
+#define newvar(v)	do{if((v=(Var_t*)internal.freevars)){internal.freevars=(*((char**)v));}else v=(Var_t*)newchunk(&internal.freevars,sizeof(Var_t));}while(0)
 
 #if CHAR_MIN < 0
 #define ctable		(ctypes-(CHAR_MIN)+1)
