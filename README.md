@@ -29,11 +29,14 @@ features the following improvements and new features:
 - Enhanced build integrity.  In addition to file modification times,
   NMAKE now tracks the file sizes of built objects for determining
   whether a rebuild is necessary.
+- Recognizes Makefile.nmk and makefile.nmk as Nmakefiles.  This should
+  aid syntax-highlighting editors in selecting the proper Makefile
+  dialect and complies with the 8.3 filename convention.
 
 ## Licensing
 
 The AT&T source code within this package is licensed under the
-[Eclipse Public Licence, version 2.0][4] without the GPL compatibility
+[Eclipse Public License, version 2.0][4] without the GPL compatibility
 clause.  Please consider [supporting][5] the addition of said clause.
 
 Newly written source code within this repository is released under the

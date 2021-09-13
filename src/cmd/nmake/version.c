@@ -44,7 +44,7 @@ char*			version = id;
 char*			initstatic =
 "\
 MAKEARGS = Nmakeargs:nmakeargs:Makeargs:makeargs\n\
-MAKEFILES = Nmakefile:nmakefile:Makefile:makefile\n\
+MAKEFILES = Nmakefile:nmakefile:Makefile.nmk:makefile.nmk:Makefile:makefile\n\
 MAKEPP = $(MAKERULESPATH:/:/ /G:D:X=cpp:P=X:O=1)\n\
 MAKEPPFLAGS = -I- $(PPFLAGS) -D:'map \"/#<(comment|rules)>/\"' -D-P\n\
 MAKERULES = makerules\n\

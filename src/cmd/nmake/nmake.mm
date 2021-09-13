@@ -128,6 +128,8 @@ By default
 searches for a file named
 .LR Nmakefile ,
 .LR nmakefile ,
+.LR Makefile.nmk ,
+.LR makefile.nmk ,
 .LR Makefile ,
 and then
 .L makefile

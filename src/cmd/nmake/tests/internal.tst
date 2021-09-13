@@ -44,7 +44,7 @@ TEST 02 'on the fly makefile conversion'
 	DO	export MAKECONVERT=$'foofile:barfile "tr A-Z a-z < $(>)"'
 	EXEC	all
 		OUTPUT -
-		ERROR - $'make: a makefile must be specified when foofile,barfile,Nmakefile,nmakefile,Makefile,makefile omitted'
+		ERROR - $'make: a makefile must be specified when foofile,barfile,Nmakefile,nmakefile,Makefile.nmk,makefile.nmk,Makefile,makefile omitted'
 		EXIT 1
 
 	DO	unset MAKECONVERT
@@ -105,7 +105,7 @@ script MAKEFILES
 		INPUT Makefile $'MAKEFILES = $(PWD:B).mk
 :MAKE: maintenance'
 		ERROR - $'maintenance:
-make [maintenance]: warning: a makefile must be specified when Nmakefile,nmakefile,Makefile,makefile omitted
+make [maintenance]: warning: a makefile must be specified when Nmakefile,nmakefile,Makefile.nmk,makefile.nmk,Makefile,makefile omitted
 make [maintenance]: null: a main target must be specified
 make: *** exit code 1 making maintenance'
 		EXIT 1

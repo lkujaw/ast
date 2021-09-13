@@ -9,10 +9,10 @@ TEST 01 'no view'
 	print $(*.VIEW)
 	print $(...:N=\\(*\\)$(MAKEFILE)*:H)
 	print $(...:N=$(MAKEFILE)*:H)'
-		OUTPUT - $'.\n\nMakefile Makefile.mo'
+		OUTPUT - $'.\n\nMakefile Makefile.mo Makefile.nmk'
 
 	EXEC
-		OUTPUT - $'.\n()Makefile\nMakefile Makefile.mo Makefile.ms'
+		OUTPUT - $'.\n()Makefile\nMakefile Makefile.mo Makefile.ms Makefile.nmk'
 
 TEST 02 'basic MAKEPATH'
 
