@@ -1,3 +1,4 @@
+13-03-20 make.probe: add CC.NM.NMFLAGS for stupid stupid stupid aix -Xany
 12-07-17 iffe.sh: add C code NOTE("...") to ammend --verbose output
 12-06-26 iffe.sh: fix "npt foo" to handle function-like macro foo()
 12-06-20 package.sh: use $KSH for rt in "results test"
@@ -329,7 +330,7 @@
 	 package.mk: add the runtime package type (no *.[ah])
 	 iffe.sh: fix key test reports
 04-08-26 Makefile: { add m2.c m3.c } -lm tests for { frexp[l] ldexp[l] }
-04-08-11 package.mk: handle HOSTTYPE for solaris > 9 
+04-08-11 package.mk: handle HOSTTYPE for solaris > 9
 	 package.sh: add `checkaout proto' for { make view }
 	 package.sh: check for { md5sum md5 }
 	 iffe.sh: add {if|elif|else|endif} test ...
@@ -450,7 +451,7 @@
 03-05-05 package.mk: fix cygwin tarball names
 03-04-30 package.sh: move (cc|ld|ldd).$HOSTTYPE updates from Makefile
 03-04-27 make.probe: fix mvs CC.PREFIX.SHARED "lib" => ""
-	 make.probe: add CC.DLL.DIR = $(BINDIR) or $(LIBDIR) 
+	 make.probe: add CC.DLL.DIR = $(BINDIR) or $(LIBDIR)
 	 make.probe: add { CC.LD.LAZY CC.LD.NOLAZY CC.LD.RECORD CC.LD.NORECORD }
 	 probe.win32: sync with latest CC.*
 03-04-25 mamprobe.sh: add args to `. $makeprobe' for ancient sh
@@ -458,7 +459,7 @@
 03-04-22 probe.win32: CC.DIALECT += "LIBPP -I-" for all cc's
 	 package.sh: fix admin write binary tarball snarf
 03-04-21 package.mk: package covered *.@(pkg|lic) too
-03-04-15 package.mk: don't generate incremental archives for lcl 
+03-04-15 package.mk: don't generate incremental archives for lcl
 	 package.mk: add incremental=[source:1 binary:0] archive control
 	 package.sh: generate $INSTALLROOT/bin/cc wrapper for CC != cc
 	 package.sh: admin must ditto lib/package/*.@(pkg|lic) too
@@ -663,7 +664,7 @@
 01-08-11 package.mk: handle single gz executable packages (e.g., for ksh)
 	 package.sh: fix package install to require nmake only if no *.sum
 	 iffe.sh: drop ancient menu and prompt actions; check ./hdr.h clash
-01-07-17 package: fix use cross compile test to generate files in /tmp 
+01-07-17 package: fix use cross compile test to generate files in /tmp
 01-06-27 ratz: handle hard and soft links if possible
 01-06-07 Makefile: fix :MAPLIB: for sco
 01-05-31 crossexec.sh: add
@@ -715,7 +716,7 @@
 	 package.sh: add $SECONDS to the DEBUG trace prompt
 01-01-01 ratz.c: #ifdef for uwin ncc
 	 iffe.sh,package.sh: check PACKAGE_PATH for local installations
-	 package.sh: add psrinfo for osf.alpha host cpu 
+	 package.sh: add psrinfo for osf.alpha host cpu
 	 package.sh: change pax --meter probe; some hang on /dev/tty
 	 package.sh: fix `install flat ARCH'
 	 mamake: eliminate loops from scan order
@@ -768,7 +769,7 @@
 	 package: fix write delta source to use default pax format
 	 package: add disambiguating bias for sgi.mips3 over sgi.mips4
 	 package.mk: fix for directory content packages lib ast-locale
-00-05-01 iffe: fix invalid _LIB_ macro identifier 
+00-05-01 iffe: fix invalid _LIB_ macro identifier
 00-04-11 C+probe: uniq stdinclude and stdlib, fix usrinclude
 00-04-01 regress: fix explicit OUTPUT bug that didn't compare with expected
 00-03-17 package: all archives are .tgz for binary download
@@ -849,7 +850,7 @@
 98-11-11 regress: fix UNIT PATH lookup
 98-11-01 regress: add PROG
 98-10-01 hostinfo: add unixware.*
-	 use: export PACKAGE_* 
+	 use: export PACKAGE_*
 98-08-11 C.probe: add /usr/include check (for sco CC)
 	 hostinfo: handle uwin uname update
 98-05-01 regress: fix bug sometimes didn't list last test

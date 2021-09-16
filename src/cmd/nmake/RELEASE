@@ -1,4 +1,5 @@
 13-05-28 Makerules.mk: fix MAM CC.SUFFIX.OBJECT initialization
+13-03-20 Makerules.mk: add CC.NM.NMFLAGS for stupid stupid stupid aix -Xany
 13-02-14 command.c: .FOREGROUND => all MAKING prereqs in parent chain done (e.g. via coshell service)
 12-12-01 Makerules.mk: fix MAMROOT logic when PWD outside of viewpath
 12-09-18 Makerules.mk: set --novirtual if VPATH contains less than 2 dirs
@@ -192,7 +193,7 @@
 06-09-28 Makerules.mk: add $(IFFEREFS)
 06-09-15 Makerules.mk: fix .SHARED.DEF.* scope prereq logic
 06-09-01 Makefile: no -O for command.c on darwin (probably gcc 4.0's fault)
-06-08-15 command.c: handle no action but .AFTER|.BEFORE prereqs 
+06-08-15 command.c: handle no action but .AFTER|.BEFORE prereqs
 06-08-11 Makerules.mk: .PACKAGE.INIT now checks lib64 for HOSTTYPE==*64
 06-08-11 command.c: pass $(COSHELL) to coopen()
 06-08-07 command.c,parse.c: add 'query - blocked' for blocked jobs
@@ -538,7 +539,7 @@
 	 main.c: add initcode() startup call
 03-06-11 Makerules.mk: reinstate install .a on .dll+.lib systems
 	 rules-win32.mk: inhibit libast.a install since cc does implicit ast.lib
-	 Makerules.mk: drop DIALECT==CLOSURE check for new -l* binding 
+	 Makerules.mk: drop DIALECT==CLOSURE check for new -l* binding
 	 Makerules.mk: add --mam ${mam_cc_FLAGS} to handle user CCFLAGS override
 	 Makerules.mk: fix :DLL: to honor CCFLAGS
 	 Makerules.mk: add -D_BLD_DEBUG to mam CCFLAGS
@@ -669,7 +670,7 @@
 02-03-23 Makerules.mk: ensure that _BLD_<variant> is valid identifier
 	 Makerules.mk: add .LIST.INSTALLED for existing files only
 	 Makerules.mk: add $(LICENSEFILE) to .FILES.
-02-03-14 variable.c: add label to --mam "setv" 
+02-03-14 variable.c: add label to --mam "setv"
 02-02-14 makerules: add and use CMPFLAGS
 	 makerules: add win32 ar I flag only when installing .a
 	 makerules: iffe { CC CCFLAGS LDFLAGS } => { IFFECC ... }
@@ -1213,7 +1214,7 @@
 95-01-19 add CC.ARFLAGS for $(CC) that generates libraries
 	 add CC.DIALECT=PTRIMPLICIT for implicit C++ ptr dir name
 	 add CC.DIALECT=PTRMKDIR if C++ local ptr must exist
-	 add CC.DIALECT=PTRCOPY if C++ PTRMKDIR contents copied 
+	 add CC.DIALECT=PTRCOPY if C++ PTRMKDIR contents copied
 	 fix CC.READONLY probe to cast the const pointer assignment
 	 punt() now assumes oldmake has mam if options set
 	 add a few .SPECIAL's in ::
@@ -1241,7 +1242,7 @@
 	 add "*.[sS]|*.[aA][sS][mM]" to ppcc source list
 95-01-01 fix .CLOBBER $(-global) expansion
 	 .NULL metarule now provides equivalence for :G:
-	 avoid multiple entries in make.probe CC.REQUIRE.++ 
+	 avoid multiple entries in make.probe CC.REQUIRE.++
 94-12-25 ppcc, MAM -l<shared>, probe tweaks
 	 fix port/rand ar touch bug that modified member terminator
 	 fix .DO.INSTALL bug that asserted x : x
@@ -1347,7 +1348,7 @@
 	 fix circular implicit prereq actions
 	 fix aix shared library probe
 	 finish now handles errors in .MAKEDONE and .DONE
-	 fix stray D_mark unbind with D_markbind,D_markprereq,D_markscan 
+	 fix stray D_mark unbind with D_markbind,D_markprereq,D_markscan
 	 fix :READONLY: probe for mips
 	 base rules unbound after reading (so make can install them!)
 	 delay statefile load until after makefile read

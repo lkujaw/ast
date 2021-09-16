@@ -460,7 +460,7 @@ NAWK = gawk
 else
 NAWK = awk
 end
-NM = $(CC.NM)
+NM = $(CC.NM) $(CC.NM.NMFLAGS)
 NMEDIT = $(CC.NMEDIT) -e '/^$(CC.PREFIX.SYMBOL)_STUB_/d' -e '/$(CC.PREFIX.SYMBOL)_already_defined$/d'
 NMFLAGS = $(CC.NMFLAGS)
 PACKAGE =
