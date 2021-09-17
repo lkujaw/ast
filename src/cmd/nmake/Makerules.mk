@@ -2243,8 +2243,8 @@ RECURSEROOT = .
 							esac
 							continue
 						elif	test ! -f $$(LIBDIR)/$(CC.PREFIX.ARCHIVE)$i$(CC.SUFFIX.ARCHIVE)
-						then	case `{ $$(CC) $$(CCFLAGS) $$(*.SOURCE.%.ARCHIVE:$$(.CC.NOSTDLIB.):N=*/$(CC.PREFIX.ARCHIVE)*:P=L:/^/-L/) $$(LDFLAGS) -o 1.$(tmp).x 1.$(tmp)$(CC.SUFFIX.OBJECT) $(D) -l$i 2>&1 || echo '' $x ;} | $(SED) -e 's/[][()+@?]/#/g' || :` in
-							*$x*)	case `{ $$(CC) $$(CCFLAGS) $$(LDFLAGS) -o 1.$(tmp).x 1.$(tmp)$(CC.SUFFIX.OBJECT) $(D) -l$i 2>&1 || echo '' $x ;} | $(SED) -e 's/[][()+@?]/#/g' || :` in
+						then	case `{ $$(CC) $$(CCFLAGS) $$(*.SOURCE.%.ARCHIVE:$$(.CC.NOSTDLIB.):N=*/$(CC.PREFIX.ARCHIVE)*:P=L:/^/-L/) $$(LDFLAGS) -o 1.$(tmp).x 1.$(tmp)$(CC.SUFFIX.OBJECT) $(D) -l$i 2>&1 || echo '' "$x" ;} | $(SED) -e 's/[][()+@?]/#/g' || :` in
+							*$x*)	case `{ $$(CC) $$(CCFLAGS) $$(LDFLAGS) -o 1.$(tmp).x 1.$(tmp)$(CC.SUFFIX.OBJECT) $(D) -l$i 2>&1 || echo '' "$x" ;} | $(SED) -e 's/[][()+@?]/#/g' || :` in
 								*$x*) continue ;;
 								esac
 								;;
