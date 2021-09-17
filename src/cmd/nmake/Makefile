@@ -45,6 +45,8 @@ nmake.1 : nmake nmake.1.body nmake.1.tail
 
 ppcc :: ppcc.sh
 
+$(BINDIR) :INSTALLDIR: gnatscan
+
 :INSTALLDIR: convert
 
 convert :: convert.c

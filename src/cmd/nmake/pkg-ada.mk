@@ -24,13 +24,14 @@
 .PACKAGE.ada.dontcare := 1
 
 ADA = gcc
+ADAFLAGS =
+ADAFLAGS.LINT =
 ADABIND = gnatbind
 ADALS = gnatls
 ADALIBRARIES = -lgnat
 
-freeze ADA
-
-(ADAFLAGS) (ADAFLAGS.LINT) : .PARAMETER
+(ADA) (ADAFLAGS) (ADAFLAGS.LINT) (ADABIND) (ADALS) \
+	(ADALIBRARIES) : .PARAMETER
 
 .SUFFIX.ada = .adb
 .SUFFIX.HEADER.ada = .ads
@@ -39,7 +40,7 @@ freeze ADA
 /* Make ADAKRUNCH an environmental variable. */
 .EXPORT : ADAKRUNCH
 
-/* Add the current directory to search path. */
+/* Add the current directory to the search path. */
 .SOURCE.adb .SOURCE.ads : .INSERT .
 .SOURCE.ali : $$(*.SOURCE.a)
 
@@ -58,64 +59,62 @@ $(.SUFFIX.ada.m4:/^/.ATTRIBUTE.%) : .SCAN.m4
 
 .SOURCE.%.SCAN.ada : .FORCE $$(*.SOURCE.adb) $$(*.SOURCE.ads) $$(*.SOURCE)
 
+.GNAT.KRUNCH :FUNCTION: (ADAKRUNCH)
+	if "$(ADAKRUNCH)" == ""
+		return $(ADAKRUNCH)
+	else
+		return "-gnatk$(ADAKRUNCH)"
+	end
+
 .PROBE.INIT : .PKG.ADA.INIT
 
 .PKG.ADA.INIT : .MAKE .VIRTUAL .FORCE .AFTER
-	/* Detect whether GNAT is present. */
+	# Detect whether the GNAT compiler is present.
 	if ! "$(PATH:/:/ /G:X=$(ADABIND):P=X)"
 		error 3 $(ADABIND): Ada compiler not found -- required to build $(.RWD.:-$(PWD:B))
 	end
-	/* Add the GNAT library path to the search list. */
+	# Add the GNAT library path to the search list.
 	.SOURCE.a : $(GNATPATH)
-	/* Depend on the binder-generated 'main' for Ada commands. */
-	.APPEND.%.COMMAND : $$(!:A=.SCAN.ada:@?b~$$(<).o??)
+	# Depend on the binder-generated 'main' for Ada commands.
+	.APPEND.%.COMMAND : $$(!:A=.SCAN.ada:@?b~.o??)
+	# It is necessary to filter for the .SCAN.ada attribute as the
+	#  modification of LDLIBRARIES affects the global scope (incl. C).
+	LDLIBRARIES += $$(!:A=.SCAN.ada:@?$$(ADALIBRARIES)??)
+	# '&=' adds a hidden component (i.e., non-state) to ADAFLAGS.
+	ADAFLAGS &= $$(.INCLUDE. ada -I)
+
+b~.o : .MAKE .VIRTUAL .REPEAT .FORCE .IGNORE
+	local B
+	B = $(<<:B)
+	b~$(B).adb b~$(B).ads : .JOINT .SCAN.IGNORE $(B).ali (ADABIND)
+		$(ADABIND) $(.INCLUDE. ada -I) $(>)
+	b~$(B).o b~$(B).ali : .JOINT b~$(B).adb (ADA) (ADAFLAGS) (.GNAT.KRUNCH)
+		$(ADA) -x ada $(.GNAT.KRUNCH) $(ADAFLAGS) -c $(>)
+	$(B) : b~$(B).o
 
 GNATPATH :COMMAND: (ADALS)
-	$(ADALS) -v|grep adalib|sed -e 's:^ *::'
+	$(SILENT) $(ADALS) -v|$(GREP) adalib|$(SED) -e 's:^ *::'
 /* This instructs NMAKE to add a runpath for the GNAT library. */
 LDRUNPATH=.
 
-/* Note that this function affects the global scope (incl. C). */
-.ADA.INIT : .MAKE .VIRTUAL .FORCE .IGNORE
-	LDLIBRARIES += $$(!:A=.SCAN.ada:@?$$(ADALIBRARIES)??)
-
-.GNAT.KRUNCH :FUNCTION: (ADAKRUNCH)
-	if "$(ADAKRUNCH)" != ""
-		return "-gnatk"$(ADAKRUNCH)
-	else
-		return $(ADAKRUNCH)
-	end
-
-ADAFLAGS += $$(.INCLUDE. ada -I)
-
 for .S. in $(.SUFFIX.ada) $(.SUFFIX.HEADER.ada)
-	%.o %.ali : %$(.S.) (ADA) (.GNAT.KRUNCH) (ADAFLAGS) (ADAFLAGS.LINT) .ADA.INIT
+	%.o %.ali : %$(.S.) (ADA) (ADAFLAGS) (ADAFLAGS.LINT) (.GNAT.KRUNCH)
 		$(ADA) -x ada $(.GNAT.KRUNCH) $(ADAFLAGS) $(ADAFLAGS.LINT) -c $(>)
 end
-
-/* Listing "" first forestalls infinite recursion within this metarule. */
-b~%.adb b~%.ads : "" %.ali $$(!%.ali:B:S=.ali:T!=F) (ADABIND)
-	$(ADABIND) -x $("$(.DEDUPLICATE $(!$(%).ali:B:S=.ali:T=F:D:H>U) $(*.SOURCE.a))":/^/-I/) $(*:N=$(%).ali)
-
-b~%.o b~%.ali : b~%.adb (ADA) (ADAFLAGS)
-	$(ADA) -x ada $(ADAFLAGS) -c $(>)
 
 for .S. in b s
 	%.ad$(.S.) : %.am$(.S.) (M4) (M4FLAGS)
 		$(M4) $(M4FLAGS) $(!:N=*.m4) $(>) > $(<)
 end
 
-":ADA_LIBRARY:" : .MAKE .OPERATOR
+":ADA_LIBRARY:" : .MAKE .OPERATOR .PROBE.INIT
 	local libraryName libraryVersion aliDirectory
 	libraryName    := $(<:O=1)
 	libraryVersion := $(<:O=2)
 	aliDirectory   := "$$(LIBDIR)/$$(CC.PREFIX.SHARED)$(libraryName)/"
-	/* Delegate library installation to :LIBRARY:. */
-	$(libraryName) $(libraryVersion) :LIBRARY: $(>)
-	/*
-	 * Install GNAT Ada Library Information (ALI) files.
-	 *
-	 * These must be installed read-only to prevent GNAT from attempting
-	 * to update them.
-	 */
+	# Delegate other library functions to ':LIBRARY:'.
+	$(<) :LIBRARY: $(>)
+	# Install GNAT Ada Library Information (ALI) files.
+	#
+	# These must be installed read-only to forestall updates by GNAT.
 	$(aliDirectory) :INSTALLDIR: $(>:N=*.ad[bs]:B:S=.ali) mode=a-wx

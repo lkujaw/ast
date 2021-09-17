@@ -629,6 +629,11 @@ make ${INSTALLROOT}/lib/make/ppcc
 prev ppcc
 exec - test '' = 'ppcc' || ${STDCMP} 2>/dev/null -s ppcc ${INSTALLROOT}/lib/make/ppcc || { ${STDMV} ${INSTALLROOT}/lib/make/ppcc ${INSTALLROOT}/lib/make/ppcc.old 2>/dev/null || true; ${STDCP} ppcc ${INSTALLROOT}/lib/make/ppcc ;}
 done ${INSTALLROOT}/lib/make/ppcc generated
+make ${INSTALLROOT}/bin/gnatscan
+make gnatscan
+done gnatscan
+exec - test '' = 'gnatscan' || ${STDCMP} 2>/dev/null -s gnatscan ${INSTALLROOT}/bin/gnatscan || { ${STDMV} ${INSTALLROOT}/bin/gnatscan ${INSTALLROOT}/bin/gnatscan.old 2>/dev/null || true; ${STDCP} gnatscan ${INSTALLROOT}/bin/gnatscan ;}
+done ${INSTALLROOT}/bin/gnatscan generated
 make ${INSTALLROOT}/lib/make
 exec - if silent test ! -d ${INSTALLROOT}/lib/make
 exec - then mkdir -p ${INSTALLROOT}/lib/make
