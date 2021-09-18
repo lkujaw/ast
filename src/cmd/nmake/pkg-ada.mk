@@ -76,7 +76,7 @@ $(.SUFFIX.ada.m4:/^/.ATTRIBUTE.%) : .SCAN.m4
 	# Add the GNAT library path to the search list.
 	.SOURCE.a : $(GNATPATH)
 	# Depend on the binder-generated 'main' for Ada commands.
-	.APPEND.%.COMMAND : $$(!:A=.SCAN.ada:@?b~.o??)
+	.INSERT.%.COMMAND : $$(!:A=.SCAN.ada:@?b~.o??)
 	# It is necessary to filter for the .SCAN.ada attribute as the
 	#  modification of LDLIBRARIES affects the global scope (incl. C).
 	LDLIBRARIES += $$(!:A=.SCAN.ada:@?$$(ADALIBRARIES)??)
