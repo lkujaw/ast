@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -29,6 +31,8 @@
  */
 
 #include "make.h"
+USE_ASSERT
+
 #include "options.h"
 
 #define OPT_OFFSET	10

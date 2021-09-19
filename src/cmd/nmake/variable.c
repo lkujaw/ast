@@ -17,7 +17,9 @@
  *               Glenn Fowler <glenn.s.fowler@gmail.com>                *
  *                                                                      *
  ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -26,9 +28,9 @@
  */
 
 #include "make.h"
-#include "options.h"
-
 USE_ASSERT
+
+#include "options.h"
 
 #define BINDING(r, f)                 \
     (((f)&VAL_UNBOUND) ? unbound(r)   \

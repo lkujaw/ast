@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -33,9 +35,9 @@
  */
 
 #include "make.h"
-#include "options.h"
-
 USE_ASSERT
+
+#include "options.h"
 
 /*
  * return a pointer to the rule <s1><s2><s3>
@@ -215,7 +217,14 @@ stateview(int op, char* name, register Rule_t* s, register Rule_t* r, int view, 
 					s->dynamic |= D_lowres;
 				else
 					s->dynamic &= ~D_lowres;
-				s->prereqs = listcopy(v->prereqs);
+				if (NiL == v->prereqs)
+				{
+					s->prereqs = NiL;
+				}
+				else
+				{
+					s->prereqs = listcopy(v->prereqs);
+				}
 				s->scan = v->scan;
 				for (p = s->prereqs; p; p = p->next)
 				{
@@ -1159,8 +1168,11 @@ statetime(register Rule_t* r, int sync)
 		s->action = r->action;
 		if (s->prereqs != r->prereqs)
 		{
-			if ((r->property & (P_joint|P_target)) != (P_joint|P_target))
+			if (NiL != s->prereqs
+			    && (r->property & (P_joint|P_target)) != (P_joint|P_target))
+			{
 				freelist(s->prereqs);
+			}
 			s->prereqs = r->prereqs;
 		}
 		state.savestate = 1;
@@ -1182,7 +1194,7 @@ statetime(register Rule_t* r, int sync)
  */
 
 int
-statetimeq(Rule_t* r, Rule_t* s)
+statetimeq(const Rule_t * r, Rule_t* s)
 {
 	long		d;
 

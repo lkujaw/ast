@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research

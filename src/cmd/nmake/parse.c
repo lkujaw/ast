@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -31,6 +33,8 @@
  */
 
 #include "make.h"
+USE_ASSERT
+
 #include "options.h"
 
 #include <sig.h>
@@ -2583,8 +2587,11 @@ assertion(char* lhs, Rule_t* opr, char* rhs, char* act, int op)
 			if ((r->property & P_metarule) && (prereqs || *act || (set.op & A_null)))
 				property |= r->property & (P_metarule|P_use);
 			s = r->uname && !(r->property & P_state) ? r->uname : r->name;
-			if (!(x = (r->property & P_state) ? rulestate(r, 0) : staterule(RULE, r, NiL, 0)) || r->prereqs != x->prereqs)
+			if ((!(x = (r->property & P_state) ? rulestate(r, 0) : staterule(RULE, r, NiL, 0)) || r->prereqs != x->prereqs)
+				&& NiL != r->prereqs)
+			{
 				freelist(r->prereqs);
+			}
 			if (set.op & A_copy)
 			{
 				if (!prereqs || prereqs->next)

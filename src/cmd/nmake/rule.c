@@ -17,7 +17,9 @@
 *               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -28,9 +30,9 @@
  */
 
 #include "make.h"
-#include "options.h"
-
 USE_ASSERT
+
+#include "options.h"
 
 #define ANON(name,flags)	(void)rinternal(name,P_attribute|(flags))
 #define ASOC(field,name,flags)	internal.field=rassociate(name,flags)
@@ -221,7 +223,7 @@ maprule(char* s, Rule_t* r)
 Rule_t*
 makerule(register char* name)
 {
-	register Rule_t*	r;
+	register Rule_t*	r = NiL;
 	int			n;
 
 	if (name)
@@ -238,7 +240,14 @@ makerule(register char* name)
 	newrule(r);
 	ASSERT(r != NiL)
 	{
-		r->name = putrule(0, r);
+		zero(*r);
+		r->name = putrule(NiL, r);
+		r->active = NiL;
+		r->uname = NiL;
+		r->prereqs = NiL;
+		r->action = NiL;
+		rulesettime(r, INVTIME);
+		rulesetsize(r, INVSIZE);
 		if (state.compnew)
 		{
 			(*state.compnew)(r->name, (char*)r, state.comparg);
@@ -247,7 +256,6 @@ makerule(register char* name)
 		{
 			n = nametype(r->name, NiL);
 		}
-		rulesetsize(r, INVSIZE);
 		if (n & (NAME_staterule|NAME_altstate))
 		{
 			r->dynamic |= D_compiled;
@@ -1187,7 +1195,10 @@ mergestate(Rule_t* from, Rule_t* to)
 		}
 		s = tostate->name;
 		*tostate = *fromstate;
-		tostate->prereqs = listcopy(fromstate->prereqs);
+		if (NiL != fromstate->prereqs)
+		{
+			tostate->prereqs = listcopy(fromstate->prereqs);
+		}
 		tostate->name = s;
 		for (i = RULE + 1; i <= STATERULES; i++)
 			if ((fromstate = staterule(i, from, NiL, 0)) && !staterule(i, to, NiL, 0))
@@ -1880,16 +1891,15 @@ initview(void)
 
 /* Returns TRUE if RuleQuery has changed compared to RulePrior. */
 Bool_t
-ruleischanged(const Rule_t * const pRuleQuery,
-	      const Rule_t * const pRulePrior)
+ruleischanged(const Rule_t * const pRulePrior, Rule_t * const pRuleQuery)
 {
 	Bool_t fResult = TRUE;
 
-	ASSERT(NiL != pRuleQuery && NiL != pRulePrior &&
-	       pRuleQuery != pRulePrior)
+	ASSERT(NiL != pRulePrior && NiL != pRuleQuery &&
+	       pRulePrior != pRuleQuery)
 	{
-		if (statetimeq(pRuleQuery, pRulePrior) &&
-		    (pRuleQuery->size == pRulePrior->size))
+		if (statetimeq(pRulePrior, pRuleQuery) &&
+		    (pRulePrior->size == pRuleQuery->size))
 		{
 			fResult = FALSE;
 		}
@@ -1897,12 +1907,24 @@ ruleischanged(const Rule_t * const pRuleQuery,
 	return fResult;
 }
 
-#undef rulesetsize
+const char _g_szInvSize[] = "rulesetsize: invalid size %I*d";
+const char _g_szSetSize[] = "rulesetsize(%s): [%s:%d] set size to %I*d (was %I*d)";
+
 void
-rulesetsize(Rule_t *pRuleSet, Sfoff_t offNewSize)
+rsetsize(Rule_t *pRuleSet, Sfoff_t offNewSize)
 {
 	ASSERT(pRuleSet != NiL && (offNewSize == INVSIZE || offNewSize >= 0))
 	{
 		pRuleSet->size = offNewSize;
+	}
+}
+
+void
+rsettime(Rule_t *pRuleSet, Time_t timeRule)
+{
+	ASSERT(pRuleSet != NiL &&
+	       (timeRule == NOTIME || timeRule == INVTIME || timeRule >= OLDTIME))
+	{
+		pRuleSet->time = timeRule;
 	}
 }

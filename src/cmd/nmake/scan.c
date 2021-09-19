@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -26,6 +28,7 @@
  */
 
 #include "make.h"
+USE_ASSERT
 
 #include <tm.h>
 
@@ -1757,7 +1760,7 @@ List_t*
 scan(register Rule_t* r, Time_t* tm)
 {
 	register Rule_t*	s;
-	register List_t*	oprereqs;
+	register List_t*	oprereqs = NiL;
 	Rule_t*			alt;
 	List_t*			p;
 	Scan_t*			ss;
@@ -1834,8 +1837,11 @@ scan(register Rule_t* r, Time_t* tm)
 		alt->scan = s->scan;
 		if (alt->prereqs != r->prereqs)
 		{
-			if ((r->property & (P_joint|P_target)) != (P_joint|P_target))
+			if (NiL != alt->prereqs
+			    && ((r->property & (P_joint|P_target)) != (P_joint|P_target)))
+			{
 				freelist(alt->prereqs);
+			}
 			alt->prereqs = r->prereqs;
 		}
 	}
@@ -1862,7 +1868,10 @@ scan(register Rule_t* r, Time_t* tm)
 	}
 	if (tm && prereqchange(r, s->prereqs, r, oprereqs))
 		*tm = CURTIME;
-	if (oprereqs != s->prereqs && (r->property & (P_joint|P_target)) != (P_joint|P_target))
+	if (NiL != oprereqs && oprereqs != s->prereqs &&
+	    ((r->property & (P_joint|P_target)) != (P_joint|P_target)))
+	{
 		freelist(oprereqs);
+	}
 	return s->prereqs;
 }

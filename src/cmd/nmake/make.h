@@ -17,7 +17,9 @@
 *               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -57,7 +59,8 @@
 #ifdef ASSERT
 #undef ASSERT
 #endif
-#define ASSERT(x)	if(!(x)){error(ERROR_PANIC|ERROR_SOURCE,_g_szSrcFile,__LINE__);}else
+#define ASSERT(x)	if(!(x)){error(ERROR_PANIC|ERROR_SOURCE,_g_szSrcFile,__LINE__,NiL);}else
+#define ASSERTM(x,m)	if(!(x)){error(ERROR_PANIC|ERROR_SOURCE,_g_szSrcFile,__LINE__,(m));}else
 
 #define COMMENT		'#'		/* make comment char		*/
 #define MARK_CONTEXT	'\002'		/* context mark -- not in input!*/
@@ -123,6 +126,7 @@
 #define viewable(r)	((r->property&P_state)&&*r->name=='(')
 #define viewname(s,v)	(*(s)=VIEWOFFSET+(v))
 #define zero(x)		memzero(&(x),sizeof(x))
+#define poison(x)	memset(&(x),204,sizeof(x))
 
 #define isaltstate(s)	(nametype(s,NiL)&(NAME_altstate))
 #define iscontext(s)	(nametype(s,NiL)&(NAME_context))
@@ -133,13 +137,108 @@
 #define isstate(s)	(nametype(s,NiL)&(NAME_staterule|NAME_altstate|NAME_statevar))
 #define isstatevar(s)	(nametype(s,NiL)&(NAME_statevar))
 
-#define freelist(x)	do{if(x){(x)->rule=(Rule_t*)internal.freelists;internal.freelists=(char*)(x);}}while(0)
-#define freerule(r)	do{zero(*r);*((char**)r)=internal.freerules;internal.freerules=(char*)(r);}while(0)
-#define freevar(v)	do{(v)->property&=(V_free|V_import);*((char**)v)=internal.freevars;internal.freevars=(char*)(v);}while(0)
+/*
+ * We cannot poison the list node because next holds the remaining
+ * list nodes to be reused and rule points to the remainder of the
+ * free list.
+ */
+#define freelist(x)                                            \
+    do                                                         \
+    {                                                          \
+        ASSERT((x) != NiL)                                     \
+        {                                                      \
+            (x)->rule          = (Rule_t *)internal.freelists; \
+            internal.freelists = (char *)(x);                  \
+            (x)                = NiL;                          \
+        }                                                      \
+    }                                                          \
+    while (0)
 
-#define newlist(x)	do{if(x=(List_t*)internal.freelists){if(x->next){x=x->next;*((char**)internal.freelists)=(char*)x->next;}else internal.freelists=(char*)x->rule;}else x=(List_t*)newchunk(&internal.freelists,sizeof(List_t));}while(0)
-#define newrule(r)	do{if(r=(Rule_t*)internal.freerules){internal.freerules=(*((char**)r));zero(*r);}else r=(Rule_t*)newchunk(&internal.freerules,sizeof(Rule_t));}while(0)
-#define newvar(v)	do{if((v=(Var_t*)internal.freevars)){internal.freevars=(*((char**)v));}else v=(Var_t*)newchunk(&internal.freevars,sizeof(Var_t));}while(0)
+#define freerule(r)                                  \
+    do                                               \
+    {                                                \
+        ASSERT((r) != NiL)                           \
+        {                                            \
+            poison(*(r));                            \
+            *((char **)(r))    = internal.freerules; \
+            internal.freerules = (char *)(r);        \
+            (r)                = NiL;                \
+        }                                            \
+    }                                                \
+    while (0)
+
+/* TODO: Poison variables */
+#define freevar(v)                                 \
+    do                                             \
+    {                                              \
+        ASSERT((v) != NiL)                         \
+        {                                          \
+            (v)->property &= (V_free | V_import);  \
+            *((char **)(v))   = internal.freevars; \
+            internal.freevars = (char *)(v);       \
+            (v)               = NiL;               \
+        }                                          \
+    }                                              \
+    while (0)
+
+/*
+ * Note about the (x->next) branch: To save setting both next and rule
+ * within the first free list node, newlist instead returns an
+ * intermediate list node and stitches the gap within the free list.
+ *
+ * TODO: Poison newchunk.
+ */
+#define newlist(x)                                                         \
+    do                                                                     \
+    {                                                                      \
+        if (NiL != ((x) = (List_t *)internal.freelists))                   \
+        {                                                                  \
+            if (NiL != (x)->next)                                          \
+            {                                                              \
+                (x)                            = (x)->next;                \
+                *((char **)internal.freelists) = (char *)(x)->next;        \
+            }                                                              \
+            else                                                           \
+            {                                                              \
+                internal.freelists = (char *)(x)->rule;                    \
+            }                                                              \
+            poison(*(x));                                                  \
+        }                                                                  \
+        else                                                               \
+        {                                                                  \
+            (x) = (List_t *)newchunk(&internal.freelists, sizeof(List_t)); \
+        }                                                                  \
+    }                                                                      \
+    while (0)
+
+#define newrule(r)                                                         \
+    do                                                                     \
+    {                                                                      \
+        if (NiL != ((r) = (Rule_t *)internal.freerules))                   \
+        {                                                                  \
+            internal.freerules = (*((char **)(r)));                        \
+            poison(*(r));                                                  \
+        }                                                                  \
+        else                                                               \
+        {                                                                  \
+            (r) = (Rule_t *)newchunk(&internal.freerules, sizeof(Rule_t)); \
+        }                                                                  \
+    }                                                                      \
+    while (0)
+
+#define newvar(v)                                                       \
+    do                                                                  \
+    {                                                                   \
+        if (NiL != ((v) = (Var_t *)internal.freevars))                  \
+        {                                                               \
+            internal.freevars = (*((char **)(v)));                      \
+        }                                                               \
+        else                                                            \
+        {                                                               \
+            (v) = (Var_t *)newchunk(&internal.freevars, sizeof(Var_t)); \
+        }                                                               \
+    }                                                                   \
+    while (0)
 
 #if CHAR_MIN < 0
 #define ctable		(ctypes-(CHAR_MIN)+1)
@@ -168,6 +267,7 @@
 #define KEEP	((char*)1)	/* keep path component in edit()	*/
 
 #define NOTIME	TMX_NOTIME	/* not checked time			*/
+#define INVTIME ((Time_t)(0))   /* uninitialized time                   */
 #define OLDTIME	((Time_t)(1))	/* oldest valid time			*/
 #define CURTIME	TMX_NOW		/* high resolution current time		*/
 #define CURSECS	((Seconds_t)time(NiL)) /* seconds resolution time	*/
@@ -916,6 +1016,10 @@ struct List_s				/* rule cons cell		*/
 
 /*
  * make globals
+ *
+ * NOTE: To maintain ISO C 90 compliance, ensure that the first six
+ *       characters of external symbols are unique, and use macro renaming
+ *       for more ergonomic names.
  */
 
 extern External_t	external;	/* external engine names	*/
@@ -996,6 +1100,7 @@ extern int		isoption(const char*);
 extern int		nametype(const char*, char**);
 extern List_t*		joint(Rule_t*);
 extern List_t*		listcopy(List_t*);
+extern List_t*          d_listcopy(List_t * pListSource, const char * pszSourceFile, int cSourceLine);
 extern void		listops(Sfio_t*, int);
 extern int		load(Sfio_t*, const char*, int, int);
 extern int		loadable(Sfio_t*, Rule_t*, int);
@@ -1044,8 +1149,9 @@ extern void		remdup(List_t*);
 extern void		remtmp(int);
 extern int		resolve(char*, int, int);
 extern int		rstat(char*, Stat_t*, int);
-extern Bool_t           ruleischanged(const Rule_t *pRuleQuery, const Rule_t *pRulePrior);
-extern void             rulesetsize(Rule_t *pRuleSet, Sfoff_t offNewSize);
+extern Bool_t           ruleischanged(const Rule_t *pRulePrior, Rule_t *pRuleQuery);
+extern void             rsetsize(Rule_t *pRuleSet, Sfoff_t offNewSize);
+extern void             rsettime(Rule_t *pRuleSet, Time_t timeRule);
 extern void		rules(char*);
 extern Rule_t*		rulestate(Rule_t*, int);
 extern void		savestate(void);
@@ -1059,7 +1165,7 @@ extern int		special(Rule_t*);
 extern char*		statefile(void);
 extern Rule_t*		staterule(int, Rule_t*, char*, int);
 extern Time_t		statetime(Rule_t*, int);
-extern int		statetimeq(Rule_t*, Rule_t*);
+extern int		statetimeq(const Rule_t *, Rule_t*);
 extern int		strprintf(Sfio_t*, const char*, char*, int, int);
 extern void		terminate(void);
 extern char*		timefmt(const char*, Time_t);
@@ -1072,22 +1178,38 @@ extern void		unparse(int);
 extern Var_t*		varstate(Rule_t*, int);
 extern void		wakeup(Seconds_t, List_t*);
 
-#define rulesetsize(r,s) \
-	do \
-	{ \
-		const Sfoff_t _ast_value = (s); \
-		if (_ast_value != INVSIZE && _ast_value < 0) \
-		{ \
-			error(ERROR_PANIC|ERROR_SOURCE, _g_szSrcFile, __LINE__, \
-				"rulesetsize: invalid size %I*d", \
-				sizeof(_ast_value), _ast_value); \
-		} \
-		else if ((r) != NiL && (r)->name != NiL) \
-		{ \
-			message((-14, "rulesetsize(%s): [%s:%d] set size to %I*d (was %I*d)", \
-				(r)->name, _g_szSrcFile, __LINE__, \
-				sizeof(_ast_value), _ast_value, \
-				sizeof((r)->size), (r)->size)); \
-		} \
-		rulesetsize((r),_ast_value); \
-	} while (0)
+extern const char _g_szInvSize[];
+extern const char _g_szSetSize[];
+
+#define rulesetsize(r, s)                            \
+    do                                               \
+    {                                                \
+        const Sfoff_t _ast_value = (s);              \
+        if (_ast_value != INVSIZE && _ast_value < 0) \
+        {                                            \
+            error(ERROR_PANIC | ERROR_SOURCE,        \
+                  _g_szSrcFile,                      \
+                  __LINE__,                          \
+                  _g_szInvSize,                      \
+                  sizeof(_ast_value),                \
+                  _ast_value);                       \
+        }                                            \
+        else if ((r) != NiL && (r)->name != NiL)     \
+        {                                            \
+            message((-14,                            \
+                     _g_szSetSize,                   \
+                     (r)->name,                      \
+                     _g_szSrcFile,                   \
+                     __LINE__,                       \
+                     sizeof(_ast_value),             \
+                     _ast_value,                     \
+                     sizeof((r)->size),              \
+                     (r)->size));                    \
+        }                                            \
+        rsetsize((r), _ast_value);                   \
+    }                                                \
+    while (0)
+
+#define rulesettime(r, t) rsettime(r, t)
+
+#define listcopy(l) d_listcopy(l, _g_szSrcFile, __LINE__)

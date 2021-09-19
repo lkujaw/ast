@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -26,7 +28,6 @@
  */
 
 #include "make.h"
-
 USE_ASSERT
 
 #define PREVIEW(r,x)	do{if(r->preview>x->preview&&(r->scan&&r->scan==x->scan||!r->scan&&!((r->property|x->property)&P_virtual)))r->preview=x->preview;}while(0)
@@ -331,7 +332,7 @@ make(register Rule_t* r, Time_t* ttarget, char* arg, Flags_t flags)
 	Rule_t*			r3;
 	Rule_t*			r4;
 	Rule_t*			parent;
-	List_t*			q;
+	List_t*			q = NiL;
 	Frame_t*		fp;
 	Frame_t*		oframe;
 	Frame_t			frame;
@@ -386,7 +387,10 @@ make(register Rule_t* r, Time_t* ttarget, char* arg, Flags_t flags)
 		 * append the prerequisites
 		 */
 
-		q = listcopy(r->prereqs);
+		if (NiL != r->prereqs)
+		{
+			q = listcopy(r->prereqs);
+		}
 		if (r->dynamic & D_dynamic)
 		{
 			fp = r->active;

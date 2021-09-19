@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -26,6 +28,7 @@
  */
 
 #include "make.h"
+USE_ASSERT
 
 /*
  * stat() that checks for read access
@@ -140,7 +143,7 @@ append(List_t* p, List_t* q)
 {
 	register List_t*	t;
 
-	if (t = p)
+	if ((t = p) != NiL)
 	{
 		if (q)
 		{
@@ -161,11 +164,14 @@ append(List_t* p, List_t* q)
 List_t*
 cons(Rule_t* r, List_t* p)
 {
-	register List_t*	q;
+	register List_t * q = NiL;
 
 	newlist(q);
-	q->next = p;
-	q->rule = r;
+	ASSERT(NiL != q)
+	{
+		q->next = p;
+		q->rule = r;
+	}
 	return q;
 }
 
@@ -174,28 +180,56 @@ cons(Rule_t* r, List_t* p)
  * the items in the list are not copied
  */
 
-List_t*
-listcopy(register List_t* p)
-{
-	register List_t*	q;
-	register List_t*	r;
-	register List_t*	t;
+#undef listcopy
 
-	if (!p)
-		return 0;
-	newlist(r);
-	q = r;
-	while (p)
+List_t*
+listcopy(List_t * p)
+{
+	List_t * r = NiL;
+
+	ASSERT(NiL != p)
 	{
-		q->rule = p->rule;
-		if (p = p->next)
+		newlist(r);
+		ASSERT(NiL != r)
 		{
-			newlist(t);
-			q = q->next = t;
+			List_t * q = r;
+
+			while (NiL != p)
+			{
+				q->rule = p->rule;
+				if (NiL != (p = p->next))
+				{
+					List_t * t = NiL;
+
+					newlist(t);
+					ASSERT(NiL != t)
+					{
+						q = q->next = t;
+					}
+				}
+			}
+			q->next = NiL;
 		}
 	}
-	q->next = 0;
 	return r;
+}
+
+List_t *
+d_listcopy(List_t * pListSource, const char *pszSourceFile, int cSourceLine)
+{
+	List_t * pListCopy = NiL;
+
+	if (NiL == pListSource)
+	{
+		error(ERROR_PANIC | ERROR_SOURCE, pszSourceFile, cSourceLine,
+		      "listcopy(): NiL source list");
+	}
+	else
+	{
+		pListCopy = listcopy(pListSource);
+	}
+
+	return pListCopy;
 }
 
 /*

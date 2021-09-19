@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -195,6 +197,8 @@
  */
 
 #include "make.h"
+USE_ASSERT
+
 #include "options.h"
 
 #include <sig.h>
@@ -599,13 +603,15 @@ main(int argc, char** argv)
 	 */
 
 	compref(NiL, 0);
-	if (p = internal.makefiles->prereqs)
+	if (NiL != (p = internal.makefiles->prereqs))
 	{
 		p = internal.tmplist->prereqs = listcopy(p);
 		for (; p; p = p->next)
 			readfile(p->rule->name, COMP_FILE, NiL);
-		freelist(internal.tmplist->prereqs);
-		internal.tmplist->prereqs = 0;
+		if (NiL != internal.tmplist->prereqs)
+		{
+			freelist(internal.tmplist->prereqs);
+		}
 	}
 
 	/*
@@ -824,8 +830,10 @@ main(int argc, char** argv)
 	 * internal.args default to internal.main
 	 */
 
-	if (!internal.args->prereqs && internal.main->prereqs)
+	if (internal.args->prereqs == NiL && internal.main->prereqs != NiL)
+	{
 		internal.args->prereqs = listcopy(internal.main->prereqs);
+	}
 
 	/*
 	 * turn up the volume again

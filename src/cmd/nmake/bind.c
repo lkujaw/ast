@@ -17,7 +17,9 @@
 *                 Glenn Fowler <gsf@research.att.com>                  *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -26,9 +28,9 @@
  */
 
 #include "make.h"
-#include "options.h"
-
 USE_ASSERT
+
+#include "options.h"
 
 /*
  * embedded spaces in file name wreak havoc
@@ -1975,7 +1977,10 @@ source(register Rule_t* r)
 			} while (q = p);
 		}
 		sfstrclose(tmp);
-		freelist(r->prereqs);
+		if (NiL != r->prereqs)
+		{
+			freelist(r->prereqs);
+		}
 		for (r->prereqs = p = lst.next; p; p = p->next)
 			p->rule->mark &= ~M_directory;
 	}
