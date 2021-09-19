@@ -27,11 +27,9 @@ ADA = gcc
 ADAFLAGS =
 ADAFLAGS.LINT =
 ADABIND = gnatbind
-ADALS = gnatls
 ADALIBRARIES = -lgnat
 
-(ADA) (ADAFLAGS) (ADAFLAGS.LINT) (ADABIND) (ADALS) \
-	(ADALIBRARIES) : .PARAMETER
+(ADA) (ADAFLAGS) (ADAFLAGS.LINT) (ADABIND) (ADALIBRARIES) : .PARAMETER
 
 .SUFFIX.ada = .adb
 .SUFFIX.HEADER.ada = .ads
@@ -51,7 +49,7 @@ ADALIBRARIES = -lgnat
 	return $("$(*.SOURCE.adb) $(*.SOURCE.ads) $(*.SOURCE)":P=C:H>U:/^/-I/)
 
 .SCAN.ada : .SCAN
-	X|gnatscan "$$(%)" "$$(.ADA.PATHS)"
+	X|$(SILENT) gnatscan "$$(%)" "-nostdinc -I- $$(.ADA.PATHS)"
 	F|M$$(?:N=*.ads:T=F)|
 
 $("$(.SUFFIX.ada) $(.SUFFIX.HEADER.ada)":/^/.ATTRIBUTE.%/) : .SCAN.ada
@@ -66,34 +64,40 @@ $(.SUFFIX.ada.m4:/^/.ATTRIBUTE.%) : .SCAN.m4
 		return "-gnatk$(ADAKRUNCH)"
 	end
 
+.GNAT.INCLUDE :FUNCTION:
+	return $("$(sh $(ADA) -print-libgcc-file-name)":D:B=adainclude)
+
+.GNAT.LIB :FUNCTION:
+	return $("$(sh $(ADA) -print-libgcc-file-name)":D:B=adalib)
+
 .PROBE.INIT : .PKG.ADA.INIT
 
 .PKG.ADA.INIT : .MAKE .VIRTUAL .FORCE .AFTER
 	# Detect whether the GNAT compiler is present.
 	if ! "$(PATH:/:/ /G:X=$(ADABIND):P=X)"
-		error 3 $(ADABIND): Ada compiler not found -- required to build $(.RWD.:-$(PWD:B))
+		error 3 Ada compiler ($(ADABIND)) not found -- required to build $(.RWD.:-$(PWD:B))
 	end
 	# Add the GNAT library path to the search list.
-	.SOURCE.a : $(GNATPATH)
+	.SOURCE.a : $(.GNAT.LIB)
+	.SOURCE.adb : $(.GNAT.INCLUDE)
+	.SOURCE.ads : $(.GNAT.INCLUDE)
 	# Depend on the binder-generated 'main' for Ada commands.
 	.INSERT.%.COMMAND : $$(!:A=.SCAN.ada:@?b~.o??)
 	# It is necessary to filter for the .SCAN.ada attribute as the
 	#  modification of LDLIBRARIES affects the global scope (incl. C).
 	LDLIBRARIES += $$(!:A=.SCAN.ada:@?$$(ADALIBRARIES)??)
 	# '&=' adds a hidden component (i.e., non-state) to ADAFLAGS.
-	ADAFLAGS &= $$(.INCLUDE. ada -I)
+	ADAFLAGS &= -nostdinc -I- $$(.INCLUDE. ada -I)
 
 b~.o : .MAKE .VIRTUAL .REPEAT .FORCE .IGNORE
 	local B
 	B = $(<<:B)
-	b~$(B).adb b~$(B).ads : .JOINT .SCAN.IGNORE $(B).ali (ADABIND)
-		$(ADABIND) $(.INCLUDE. ada -I) $(>)
+	b~$(B).adb b~$(B).ads : .JOINT $(B).ali (ADABIND)
+		$(ADABIND) -nostdinc -I- $(.INCLUDE. ada -I) $(>)
 	b~$(B).o b~$(B).ali : .JOINT b~$(B).adb (ADA) (ADAFLAGS) (.GNAT.KRUNCH)
 		$(ADA) -x ada $(.GNAT.KRUNCH) $(ADAFLAGS) -c $(>)
 	$(B) : b~$(B).o
 
-GNATPATH :COMMAND: (ADALS)
-	$(SILENT) $(ADALS) -v|$(GREP) adalib|$(SED) -e 's:^ *::'
 /* This instructs NMAKE to add a runpath for the GNAT library. */
 LDRUNPATH=.
 

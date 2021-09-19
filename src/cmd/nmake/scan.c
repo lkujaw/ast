@@ -1290,14 +1290,58 @@ scanexec(int fd, Rule_t* r, Scan_t* ss, List_t* p)
 		return scanmacro(fd, r, ss, p);
 	if (ss->external)
 	{
-		Sfio_t*	sp;
+		Sfio_t * sp = NiL;
+		Rule_t   pRuleSave;
 
-		if (!(sp = fapply(r, null, r->name, ss->external, CO_ALWAYS|CO_LOCAL|CO_URGENT)))
-			error(3, "%s: external scan error", r->name);
-		parse(sp, NiL, "external-scan", NiL);
-		sfclose(sp);
+		internal.implicit->prereqs = NiL;
+		/*
+		 * We want to run an external scanning program to
+		 * determine the dependencies of the file bound to our
+		 * rule, but the available NMAKE-COSHELL interface
+		 * assumes that the passed rule is instead being built.
+		 *
+		 * As the external scan should never modify the file,
+		 * D_same will invariably be set, causing generated
+		 * source code files to disappear from $(>).
+		 *
+		 * As a workaround, we swap the actual rule for an
+		 * impostor with only the name of the original for
+		 * the duration of the scan.
+		 *
+		 * TODO: Decouple stateful logic from COSHELL actions.
+		 */
+		ASSERT(r != NiL && r->name != NiL) {
+			memcpy(&pRuleSave, r, sizeof(Rule_t));
+			zero(*r);
+			r->name = pRuleSave.name;
+
+			/* Execute the scan. */
+			sp = fapply(r, null, r->name, ss->external, CO_ALWAYS|CO_LOCAL|CO_URGENT);
+
+			if (NiL == sp)
+			{
+				error(3, "%s: external scan error", r->name);
+				internal.implicit->prereqs = NiL;
+			}
+			else
+			{
+				/* An external scan should never modify the scanned file. */
+				if ((r->dynamic & D_built) && !(r->dynamic & D_same))
+				{
+					error(3, "%s: modified by external scanner", r->name);
+				}
+
+				parse(sp, NiL, "external-scan", NiL);
+				sfclose(sp);
+				sp = NiL;
+			}
+			/* Restore our rule. */
+			memcpy(r, &pRuleSave, sizeof(Rule_t));
+		}
+		poison(pRuleSave);
+
 		p = internal.implicit->prereqs;
-		internal.implicit->prereqs = 0;
+		internal.implicit->prereqs = NiL;
 		return p;
 	}
 	zero(frame);

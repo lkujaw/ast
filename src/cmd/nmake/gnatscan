@@ -23,7 +23,7 @@ if test $# -ne 2; then
 fi
 
 if test -n "${TMPDIR}"; then
-    TMPDIR=`echo "${TMPDIR}" | sed -e 's,/$,,'`
+    TMPDIR=`echo "${TMPDIR}" | sed -e 's:/$::'`
 else
     TMPDIR="/tmp"; export TMPDIR
 fi
@@ -40,13 +40,15 @@ fi
 GNATSCAN_TMPDIR="${TMPDIR}/gnatscan.${USER:-$LOGNAME}.$$"
 
 if mkdir "${GNATSCAN_TMPDIR}"; then
-    trap 'rm -f -r ${GNATSCAN_TMPDIR}' EXIT
+    trap 'rm -f ${GNATSCAN_TMPDIR}/* && rmdir ${GNATSCAN_TMPDIR}' EXIT
     ADA_SOURCE=`basename "${1}"`
-    ADA_OBJECT=`echo "${ADA_SOURCE}" | sed -e 's,.ad[bs]$,.o,'`
+    ADA_OBJECT=`echo "${ADA_SOURCE}" | sed -e 's:.ad[bs]$:.o:'`
     ADA_OBJECT="${GNATSCAN_TMPDIR}/${ADA_OBJECT}"
+    ADA_ALI=`echo "${ADA_SOURCE}" | sed -e 's:.ad[bs]$:.ali:'`
+    ADA_ALI="${GNATSCAN_TMPDIR}/${ADA_ALI}"
     gcc -gnatQ ${GNATKRUNCH} ${2} -c "${1}" -o "${ADA_OBJECT}" 2>/dev/null
     printf ".IMPLICIT: "
-    gnatls -d -s "${ADA_OBJECT}" | sed -e "s,${ADA_SOURCE},," | xargs | tr -d '\n'
+    grep '^D ' "${ADA_ALI}" | sed -e 's:D ::' | cut -f1 | sed -e 's:^'"${ADA_SOURCE}$"'::' | uniq | xargs | tr -d '\n'
     echo
 else
     exit 1
