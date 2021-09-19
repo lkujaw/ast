@@ -14,10 +14,12 @@
 *                            AT&T Research                             *
 *                           Florham Park NJ                            *
 *                                                                      *
-*                 Glenn Fowler <gsf@research.att.com>                  *
+*               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
+#if 0
 #pragma prototyped
+#endif
 /*
  * Glenn Fowler
  * AT&T Research
@@ -203,11 +205,11 @@ mamout(register Rule_t* r)
 		return 0;
 	if (state.mam.regress)
 		return (r->property & P_dontcare) && !state.mam.dontcare ? (Sfio_t*)0 : state.mam.out;
-	if (r->property & (P_make|P_state|P_virtual))
+	if (r->property & (P_make|P_state))
 		return 0;
 	if (state.mam.dynamic)
 		return state.mam.out;
-	if ((r->property & (P_after|P_before)) || (r->property & P_dontcare) && !(state.mam.dontcare || r->prereqs || r->action && *r->action || (r0 = staterule(RULE, r, NiL, 0)) && (r0->dynamic & D_built) && r0->action && *r0->action || !(r->dynamic & D_global)))
+	if ((r->property & (P_after|P_before|P_virtual)) || (r->property & P_dontcare) && !(state.mam.dontcare || r->prereqs || r->action && *r->action || (r0 = staterule(RULE, r, NiL, 0)) && (r0->dynamic & D_built) && r0->action && *r0->action || !(r->dynamic & D_global)))
 		return 0;
 	if (*(s = mamname(r)) == '/' || !r->time && *s != '$' && strchr(s, '/'))
 		return 0;
