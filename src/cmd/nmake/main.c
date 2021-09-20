@@ -1,7 +1,7 @@
 /***********************************************************************
 *                                                                      *
 *               This software is part of the ast package               *
-*          Copyright (c) 1984-2012 AT&T Intellectual Property          *
+*          Copyright (c) 1984-2013 AT&T Intellectual Property          *
 *                      and is licensed under the                       *
 *                 Eclipse Public License, Version 2.0                  *
 *                    by AT&T Intellectual Property                     *
@@ -14,7 +14,7 @@
 *                            AT&T Research                             *
 *                           Florham Park NJ                            *
 *                                                                      *
-*                 Glenn Fowler <gsf@research.att.com>                  *
+*               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
 #if 0
@@ -830,7 +830,7 @@ main(int argc, char** argv)
 	 * internal.args default to internal.main
 	 */
 
-	if (internal.args->prereqs == NiL && internal.main->prereqs != NiL)
+	if (NiL == internal.args->prereqs && NiL != internal.main->prereqs)
 	{
 		internal.args->prereqs = listcopy(internal.main->prereqs);
 	}

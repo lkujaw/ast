@@ -238,7 +238,7 @@ makerule(register char* name)
 		}
 	}
 	newrule(r);
-	ASSERT(r != NiL)
+	ASSERT(NiL != r)
 	{
 		zero(*r);
 		r->name = putrule(NiL, r);
@@ -1913,7 +1913,7 @@ const char _g_szSetSize[] = "rulesetsize(%s): [%s:%d] set size to %I*d (was %I*d
 void
 rsetsize(Rule_t *pRuleSet, Sfoff_t offNewSize)
 {
-	ASSERT(pRuleSet != NiL && (offNewSize == INVSIZE || offNewSize >= 0))
+	ASSERT(NiL != pRuleSet && (offNewSize == INVSIZE || offNewSize >= 0))
 	{
 		pRuleSet->size = offNewSize;
 	}
@@ -1922,7 +1922,7 @@ rsetsize(Rule_t *pRuleSet, Sfoff_t offNewSize)
 void
 rsettime(Rule_t *pRuleSet, Time_t timeRule)
 {
-	ASSERT(pRuleSet != NiL &&
+	ASSERT(NiL != pRuleSet &&
 	       (timeRule == NOTIME || timeRule == INVTIME || timeRule >= OLDTIME))
 	{
 		pRuleSet->time = timeRule;

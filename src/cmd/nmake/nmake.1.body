@@ -2,7 +2,7 @@
 .\" Glenn Fowler
 .\" AT&T Research
 .\"
-.\" @(#)nmake.1 (gsf@research.att.com) 2005-03-08
+.\" @(#)nmake.1 (glenn.s.fowler@gmail.com) 2005-03-08
 .\"
 .ds nM nmake\"	`make' someday
 .ds uM NMAKE\"	upper case \*(nM

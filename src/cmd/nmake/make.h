@@ -145,7 +145,7 @@
 #define freelist(x)                                            \
     do                                                         \
     {                                                          \
-        ASSERT((x) != NiL)                                     \
+        ASSERT(NiL != (x))                                     \
         {                                                      \
             (x)->rule          = (Rule_t *)internal.freelists; \
             internal.freelists = (char *)(x);                  \
@@ -157,7 +157,7 @@
 #define freerule(r)                                  \
     do                                               \
     {                                                \
-        ASSERT((r) != NiL)                           \
+        ASSERT(NiL != (r))                           \
         {                                            \
             poison(*(r));                            \
             *((char **)(r))    = internal.freerules; \
@@ -171,7 +171,7 @@
 #define freevar(v)                                 \
     do                                             \
     {                                              \
-        ASSERT((v) != NiL)                         \
+        ASSERT(NiL != (v))                         \
         {                                          \
             (v)->property &= (V_free | V_import);  \
             *((char **)(v))   = internal.freevars; \
@@ -1194,7 +1194,7 @@ extern const char _g_szSetSize[];
                   sizeof(_ast_value),                \
                   _ast_value);                       \
         }                                            \
-        else if ((r) != NiL && (r)->name != NiL)     \
+        else if (NiL != (r) && NiL != (r)->name)     \
         {                                            \
             message((-14,                            \
                      _g_szSetSize,                   \

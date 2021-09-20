@@ -628,7 +628,7 @@ end
 	if ! .NO.LIB.TYPE
 		if "$(-lib-type)" && "$(.PACKAGE.$(%).type)" != "-"
 			for P $(.PACKAGE.$(%).type) $(CC.LIB.TYPE)
-				/* libX-P.a or libX_P.a or libP/libX.a */
+				# libX-P.a or libX_P.a or libP/libX.a
 				T := $(CC.PREFIX.ARCHIVE)$(%)$(P)$(CC.SUFFIX.ARCHIVE)
 				if ! "$(T:A=.TARGET)" && ! "$(T:T=F)"
 					T := $(CC.PREFIX.ARCHIVE)$(%)(P:/-/_/)$(CC.SUFFIX.ARCHIVE)
@@ -965,7 +965,7 @@ end
 		if "$(-mam:N=static*,port*)"
 			return ${mam_lib$(B)}
 		end
-		/* req must be seen at or before the lib */
+		# req must be seen at or before the lib
 		DL := $(%:T=WF:P=D)
 		DR := $(T:P=D)
 		if DL != "$(DR)"
@@ -1236,7 +1236,7 @@ end
  */
 
 -L% : "" .MAKE .DONTCARE .VIRTUAL .FORCE .REPEAT .IGNORE
-	/* we should be able to do just .SOURCE.a here */
+	# we should be able to do just .SOURCE.a here
 	.SOURCE.%.ARCHIVE .SOURCE.a : $(<:/-L//)
 	if CC.SUFFIX.DYNAMIC
 		.SOURCE.%$(CC.SUFFIX.SHARED) : $(<:/-L//)
@@ -2513,7 +2513,7 @@ RECURSEROOT = .
 						end
 					end
 				else
-					/* -l$NAME will expand to -l$NAME if the library is found, otherwise "" */
+					# -l$NAME will expand to -l$NAME if the library is found, otherwise ""
 					L := $(F:T=F)
 					if L == "-l*|*$(CC.SUFFIX.DYNAMIC|CC.SUFFIX.SHARED|"..")|*/libm.a" /* XXX: probe!!! */
 						S += $(L)
@@ -3211,7 +3211,7 @@ PACKAGES : .SPECIAL .FUNCTION
 ":PACKAGE:" : .MAKE .OPERATOR
 	local A H I T N O P Q V version insert=0 install=1 this_install library=-l options=1 private
 	if "$(<)"
-		/* a separate include handles package definitions */
+		# A separate include handles package definitions.
 		eval
 		$$(<:V) :package: $$(>:V)
 			$(@:V)
@@ -3219,7 +3219,7 @@ PACKAGES : .SPECIAL .FUNCTION
 		return
 	end
 	if ! "$(-?ancestor)"
-		/* please convert me to long op names */
+		# Please convert me to long op names.
 		let I = $(".":P=L=*:C,[^/],,G:O!:H=N:O=1) - 2
 		if I > 3
 			I = 3
@@ -3991,9 +3991,9 @@ PACKAGES : .SPECIAL .FUNCTION
 			J := -$(J)
 		end
 
-		/*
-		 * insert default flags
-		 */
+		#
+		# Insert default flags.
+		#
 
 		for K $(...:T=XQSV:N=\(*FLAGS\):/[()]//G)
 			if "$($(K)_DEFAULT:V)"
@@ -4011,13 +4011,11 @@ PACKAGES : .SPECIAL .FUNCTION
 			return $(.REQUIRE.-l% -l$(%:B:S:/^$(CC.PREFIX.ARCHIVE)//:/$(CC.SUFFIX.ARCHIVE)$//:/$(CC.LIB.TYPE)$//))
 		end
 
-	/*
-	 * this is a workaround hack to help packages with broken compilers
-	 * don't rely on this hook
-	 *
-	 * sco.i386 may need
-	 *	export _MAKE_PROBE_WORKAROUND_='CC.LIB.DLL=broken --static=1'
-	 */
+	# This is a workaround hack to help packages with broken compilers.
+	# Do not rely on this hook.
+	#
+	# sco.i386 may need
+	#	export _MAKE_PROBE_WORKAROUND_='CC.LIB.DLL=broken --static=1'
 
 	if "$(_MAKE_PROBE_WORKAROUND_)"
 		local I
@@ -4034,11 +4032,9 @@ PACKAGES : .SPECIAL .FUNCTION
 .MAKEINIT : .MAKE .VIRTUAL .FORCE .OPTION.COMPATIBILITY
 	local A T1 T2 T3 T4 T5 T6 TI
 
-	/*
-	 * .SOURCE.mk gets bound long before the first user makefile is read
-	 * this assertion ensures that any user specified dirs appear
-	 * before the internal defaults set in the initdynamic[] script
-	 */
+	# .SOURCE.mk gets bound long before the first user makefile is read.
+	# This assertion ensures that any user specified directories appear
+	# before the internal defaults set in the initdynamic[] script.
 
 	.SOURCE.mk : .CLEAR . $(*.SOURCE.mk:N!=$(*.SOURCE.mk.INTERNAL:/ /|/G)) $(*.SOURCE.mk.INTERNAL)
 	.MAKE : .PROBE.INIT
@@ -4425,7 +4421,7 @@ PACKAGES : .SPECIAL .FUNCTION
 	.BIND : (IFFEFLAGS)
 	IFFEFLAGS += $$(.IFFE.REF.)
 	if ! IFFE_huh
-		/* can't figure out why this .PARAMETER must be repeated */
+		# Cannot figure out why this .PARAMETER must be repeated.
 		(IFFEFLAGS) : .PARAMETER
 	end
 	if "$(-mam:N=(regress|static)*)"
@@ -4449,9 +4445,9 @@ PACKAGES : .SPECIAL .FUNCTION
 	M4FLAGS &= $$(*.SOURCE.%.M4.INCLUDE:I=$$$(!$$$(*):P=D):/^/-I/) $$(&:T=D)
 	make .FLAGSINIT
 
-	/*
-	 * state var defaults
-	 */
+	#
+	# State variable defaults.
+	#
 
 	if ERROR_CATALOG == ""
 		ERROR_CATALOG == "$(CATALOG)"
@@ -4460,9 +4456,9 @@ PACKAGES : .SPECIAL .FUNCTION
 		USAGE_LICENSE == "$(LICENSEINFO:P=W=$(LICENSE),type=usage)$(CATALOG:N!=$(ID):Y%[--catalog?$(CATALOG)]%%)"
 	end
 
-	/*
-	 * map unknown command line targets to common actions
-	 */
+	#
+	# Map unknown command line targets to common actions.
+	#
 
 	for T3 .ARGS .MAIN
 		T2 := $(~$(T3):V)
@@ -4484,18 +4480,14 @@ PACKAGES : .SPECIAL .FUNCTION
 		end
 	end
 
-	/*
-	 * pure recursion makefiles (only :MAKE:) make .RECURSE first by default
-	 * .NORECURSE inhibits the default .RECURSE first
-	 */
+	# Pure recursion makefiles (only :MAKE:) make .RECURSE first by default
+	# .NORECURSE inhibits the default .RECURSE first.
 
 	if "$(~.MAIN:V)" == ".RECURSE" && "$(~.ALL:V)" == ".RECURSE" && ! "$(~.ARGS:V:N=.RECURSE|.NORECURSE)" && ! "$(~.ARGS:V:O=1:A=.IMMEDIATE)"
 		.ARGS : .INSERT .RECURSE
 	end
 
-	/*
-	 * check make recursion limits
-	 */
+	# Check make recursion limits.
 
 	T1 := $(-recurse:/:/ /G:N=[0-9]*:O=N)
 	if T1 > 0
@@ -5246,11 +5238,10 @@ end
 		$(T) : .CLEAR .NULL .VIRTUAL
 	end
 
-	/*
-	 * force some make...prev
-	 * bindfile() should probably do this
-	 * but right now its too noisy
-	 */
+	#
+	# Force some make...prev
+	# bindfile() should probably do this, but right now it's too noisy.
+	#
 
 	make (USAGE_LICENSE) $(LICENSEFILES)
 

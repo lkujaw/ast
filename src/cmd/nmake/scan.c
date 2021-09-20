@@ -1,7 +1,7 @@
 /***********************************************************************
 *                                                                      *
 *               This software is part of the ast package               *
-*          Copyright (c) 1984-2011 AT&T Intellectual Property          *
+*          Copyright (c) 1984-2013 AT&T Intellectual Property          *
 *                      and is licensed under the                       *
 *                 Eclipse Public License, Version 2.0                  *
 *                    by AT&T Intellectual Property                     *
@@ -14,7 +14,7 @@
 *                            AT&T Research                             *
 *                           Florham Park NJ                            *
 *                                                                      *
-*                 Glenn Fowler <gsf@research.att.com>                  *
+*               Glenn Fowler <glenn.s.fowler@gmail.com>                *
 *                                                                      *
 ***********************************************************************/
 #if 0
@@ -1310,7 +1310,7 @@ scanexec(int fd, Rule_t* r, Scan_t* ss, List_t* p)
 		 *
 		 * TODO: Decouple stateful logic from COSHELL actions.
 		 */
-		ASSERT(r != NiL && r->name != NiL) {
+		ASSERT(NiL != r && NiL != r->name) {
 			memcpy(&pRuleSave, r, sizeof(Rule_t));
 			zero(*r);
 			r->name = pRuleSave.name;
