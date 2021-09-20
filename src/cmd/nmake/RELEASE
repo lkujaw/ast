@@ -1,5 +1,8 @@
 13-05-28 Makerules.mk: fix MAM CC.SUFFIX.OBJECT initialization
+13-05-06 pkg-cobol-mfcobc.mk: add :COBWATCH:
+13-04-11 pkg-cobol-mfcobc.mk: add :COBTRACE:
 13-03-20 Makerules.mk: add CC.NM.NMFLAGS for stupid stupid stupid aix -Xany
+13-03-19 pkg-cobol-mfcobc.mk: incorporate optional probe-mfcobc.mk
 13-02-14 command.c: .FOREGROUND => all MAKING prereqs in parent chain done (e.g. via coshell service)
 12-12-01 Makerules.mk: fix MAMROOT logic when PWD outside of viewpath
 12-09-18 Makerules.mk: set --novirtual if VPATH contains less than 2 dirs
